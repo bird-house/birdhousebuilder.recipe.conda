@@ -8,7 +8,7 @@ def as_bool(value):
         return True
     return False
 
-def install_pkgs(pkgs, shell):
+def install_pkgs(pkgs):
     from subprocess import check_call
     
     pkgs = pkgs.strip()
@@ -16,7 +16,7 @@ def install_pkgs(pkgs, shell):
         return
     if pkgs:
         pkg_list = pkgs.split(' ')
-        pkg_list = [l.strip() for l in lines]
+        pkg_list = [l.strip() for l in pkg_list]
         for pkg in pkg_list:
             check_call('/opt/anaconda/bin/conda install -c https://conda.binstar.org/PinguCarsti %s' % (pkg), shell=True)
         
