@@ -15,19 +15,16 @@ long_description = (
 
 entry_point = 'birdhousebuilder.recipe.conda'
 entry_points = {"zc.buildout": [
-                            "default = %s:Cmd" % entry_point,
-                            "sh = %s:Cmd" % entry_point,
-                            "py = %s:Python" % entry_point,
+                            "default = %s:Conda" % entry_point,
                           ],
                 "zc.buildout.uninstall": [
-                            "default = %s:uninstallCmd" % entry_point,
-                            "sh = %s:uninstallCmd" % entry_point,
+                            "default = %s:uninstall" % entry_point,
                           ],
                        }
 
 tests_require = ['zope.testing', 'zc.buildout', 'manuel']
 
-setup(name='buildhousebuilder.recipe.conda',
+setup(name='birdhousebuilder.recipe.conda',
       version=version,
       description=description,
       long_description=long_description,
