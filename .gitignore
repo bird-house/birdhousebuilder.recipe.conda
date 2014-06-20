@@ -2,5 +2,6 @@
 bin
 develop-eggs
 eggs
+parts
 *.pyc
 *.egg-info
