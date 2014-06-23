@@ -3,11 +3,6 @@
 
 """Recipe conda"""
 
-def as_bool(value):
-    if value.lower() in ('1', 'true'):
-        return True
-    return False
-
 def install_pkgs(home, pkgs, channel=None):
     from subprocess import check_call
     import os
@@ -35,8 +30,8 @@ class Conda(object):
         b_options = buildout['buildout']
         self.anaconda_home = b_options.get('anaconda-home', '/opt/anaconda')
         self.conda_channel = b_options.get('conda-channel')
-        self.on_install = as_bool(options.get('on_install', 'false'))
-        self.on_update = as_bool(options.get('on_update', 'false'))
+        self.on_install = options.query_bool('on_install', default='false')
+        self.on_update = options.query_bool('on_update', default='false')
 
     def install(self):
         """installer"""
