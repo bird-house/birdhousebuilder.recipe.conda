@@ -11,16 +11,19 @@ def install_pkgs(home, pkgs, channel=None):
     if not pkgs:
         return
     if pkgs:
-        pkg_list = pkgs.split(' ')
-        pkg_list = [l.strip() for l in pkg_list]
-        for pkg in pkg_list:
-            cmd = [os.path.join(home, 'bin/conda')]
-            cmd.append('install')
-            if channel is not None:
-                cmd.append('-c')
-                cmd.append(channel)
-            cmd.append(pkg)
-            check_call(cmd, shell=False)
+        lines = pkgs.split('\n')
+        lines = [l.strip() for l in lines]
+
+        cmd = [os.path.join(home, 'bin/conda')]
+        cmd.append('install')
+        if channel is not None:
+            cmd.append('-c')
+            cmd.append(channel)
+        for line in lines:
+            pkg_list = line.split(' ')
+            pkg_list = [pkg.strip() for pkg in pkg_list]
+            cmd.extend(pkg_list)
+        check_call(cmd, shell=False)
         
 class Conda(object):
     """This recipe is used by zc.buildout"""
