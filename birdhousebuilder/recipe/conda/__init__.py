@@ -26,6 +26,7 @@ def install_pkgs(home, pkgs, channels):
     if len(pkg_list) > 0:
         cmd = [os.path.join(home, 'bin/conda')]
         cmd.append('install')
+        cmd.append('--yes')
         channel_list = split_args(channels)
         for channel in channel_list:
             cmd.append('-c')
