@@ -3,27 +3,35 @@
 
 """Recipe conda"""
 
-def install_pkgs(home, pkgs, channel=None):
+def split_args(args):
+    if args is None:
+        return []
+    
+    all_args = []
+    args = args.strip()
+    if args:
+        lines = args.split('\n')
+        lines = [l.strip() for l in lines]
+        for line in lines:
+            arg_list = line.split(' ')
+            arg_list = [arg.strip() for arg in arg_list]
+            all_args.extend(arg_list)
+    return all_args
+
+def install_pkgs(home, pkgs, channels):
     from subprocess import check_call
     import os
     
-    pkgs = pkgs.strip()
-    if not pkgs:
-        return
-    if pkgs:
-        lines = pkgs.split('\n')
-        lines = [l.strip() for l in lines]
-
+    pkg_list = split_args(pkgs)
+    if len(pkg_list) > 0:
         cmd = [os.path.join(home, 'bin/conda')]
         cmd.append('install')
-        if channel is not None:
+        channel_list = split_args(channels)
+        for channel in channel_list:
             cmd.append('-c')
             cmd.append(channel)
-        for line in lines:
-            pkg_list = line.split(' ')
-            pkg_list = [pkg.strip() for pkg in pkg_list]
-            cmd.extend(pkg_list)
-        check_call(cmd, shell=False)
+        cmd.extend(pkg_list)
+        check_call(cmd)
         
 class Conda(object):
     """This recipe is used by zc.buildout"""
@@ -32,7 +40,7 @@ class Conda(object):
         self.buildout, self.name, self.options = buildout, name, options
         b_options = buildout['buildout']
         self.anaconda_home = b_options.get('anaconda-home', '/opt/anaconda')
-        self.conda_channel = b_options.get('conda-channel')
+        self.conda_channels = b_options.get('conda-channels')
         self.on_install = options.query_bool('on_install', default='false')
         self.on_update = options.query_bool('on_update', default='false')
 
@@ -52,7 +60,7 @@ class Conda(object):
         """run the commands
         """
         pkgs = self.options.get('pkgs', '')
-        install_pkgs(self.anaconda_home, pkgs, self.conda_channel) 
+        install_pkgs(self.anaconda_home, pkgs, self.conda_channels) 
 
 def uninstall(name, options):
     pass
