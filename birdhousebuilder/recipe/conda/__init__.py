@@ -33,6 +33,7 @@ def install_pkgs(home, pkgs, channels):
             cmd.append(channel)
         cmd.extend(pkg_list)
         check_call(cmd)
+    return pkg_list
         
 class Conda(object):
     """This recipe is used by zc.buildout"""
@@ -42,26 +43,16 @@ class Conda(object):
         b_options = buildout['buildout']
         self.anaconda_home = b_options.get('anaconda-home', '/opt/anaconda')
         self.conda_channels = b_options.get('conda-channels')
-        self.on_install = options.query_bool('on_install', default='false')
-        self.on_update = options.query_bool('on_update', default='false')
 
     def install(self):
-        """installer"""
-        if self.on_install:
-            self.execute()
-        return tuple()
-
-    def update(self):
-        """updater"""
-        if self.on_update:
-            self.execute()
-        return tuple()
-
-    def execute(self):
-        """run the commands
+        """
+        install conda packages
         """
         pkgs = self.options.get('pkgs', '')
-        install_pkgs(self.anaconda_home, pkgs, self.conda_channels) 
+        return install_pkgs(self.anaconda_home, pkgs, self.conda_channels) 
+
+    def update(self):
+        return self.install()
 
 def uninstall(name, options):
     pass
