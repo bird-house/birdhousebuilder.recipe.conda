@@ -3,11 +3,17 @@
 
 """Recipe conda"""
 
+import os
 
 @property
 def anaconda_home():
     return os.path.join(os.environ.get('HOME', ''), "anaconda")
 
+def makedirs(dirname):
+    try:
+        os.makedirs(dirname)
+    except OSError:
+        pass
 
 def split_args(args):
     if args is None:
@@ -41,7 +47,7 @@ def install_pkgs(home, pkgs, channels):
         check_call(cmd)
     return pkg_list
         
-class Conda(object):
+class Recipe(object):
     """This recipe is used by zc.buildout"""
 
     def __init__(self, buildout, name, options):

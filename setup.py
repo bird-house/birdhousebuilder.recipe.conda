@@ -15,7 +15,7 @@ long_description = (
 
 entry_point = 'birdhousebuilder.recipe.conda'
 entry_points = {"zc.buildout": [
-                            "default = %s:Conda" % entry_point,
+                            "default = %s:Recipe" % entry_point,
                           ],
                 "zc.buildout.uninstall": [
                             "default = %s:uninstall" % entry_point,
