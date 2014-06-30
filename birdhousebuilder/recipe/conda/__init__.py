@@ -9,6 +9,11 @@ import os
 def anaconda_home():
     return os.path.join(os.environ.get('HOME', ''), "anaconda")
 
+def as_bool(value):
+    if value.lower() in ('1', 'true'):
+        return True
+    return False
+
 def makedirs(dirname):
     try:
         os.makedirs(dirname)
