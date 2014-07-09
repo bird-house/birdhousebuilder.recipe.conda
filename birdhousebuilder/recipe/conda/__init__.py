@@ -5,7 +5,6 @@
 
 import os
 
-@property
 def anaconda_home():
     return os.path.join(os.environ.get('HOME', ''), "anaconda")
 
@@ -58,7 +57,7 @@ class Recipe(object):
     def __init__(self, buildout, name, options):
         self.buildout, self.name, self.options = buildout, name, options
         b_options = buildout['buildout']
-        self.anaconda_home = b_options.get('anaconda-home', anaconda_home)
+        self.anaconda_home = b_options.get('anaconda-home', anaconda_home())
         self.conda_channels = b_options.get('conda-channels')
 
     def install(self):
