@@ -58,6 +58,7 @@ class Recipe(object):
         self.buildout, self.name, self.options = buildout, name, options
         b_options = buildout['buildout']
         self.anaconda_home = b_options.get('anaconda-home', anaconda_home())
+        b_options['anaconda-home'] = self.anaconda_home
         self.conda_channels = b_options.get('conda-channels', 'https://conda.binstar.org/pingucarsti')
 
     def install(self):
