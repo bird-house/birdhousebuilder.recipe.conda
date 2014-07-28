@@ -57,8 +57,8 @@ class Recipe(object):
     def __init__(self, buildout, name, options):
         self.buildout, self.name, self.options = buildout, name, options
         b_options = buildout['buildout']
-        self.anaconda_home = b_options.get('anaconda-home', anaconda_home())
-        b_options['anaconda-home'] = self.anaconda_home
+        self.prefix = b_options.get('anaconda-home', anaconda_home())
+        b_options['anaconda-home'] = self.prefix
         self.conda_channels = b_options.get('conda-channels', 'https://conda.binstar.org/pingucarsti')
 
     def install(self):
@@ -66,7 +66,7 @@ class Recipe(object):
         install conda packages
         """
         pkgs = self.options.get('pkgs', '')
-        return install_pkgs(self.anaconda_home, pkgs, self.conda_channels) 
+        return install_pkgs(self.prefix, pkgs, self.conda_channels) 
 
     def update(self):
         return self.install()
