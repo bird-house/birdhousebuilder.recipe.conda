@@ -7,7 +7,7 @@ birdhousebuilder.recipe.conda
 Introduction
 ************
 
-``birdhousebuilder.recipe.conda`` is a `Buildout`_ recipe to install `Anaconda_` packages.
+``birdhousebuilder.recipe.conda`` is a `Buildout`_ recipe to install `Anaconda`_ packages.
 
 .. _`Buildout`: http://buildout.org/
 .. _`Anaconda`: http://www.continuum.io/
