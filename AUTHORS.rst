@@ -1,4 +1,4 @@
 Authors
 *******
 
-Carsten Ehbrecht ehbrecht@dkrz.de
+Carsten Ehbrecht ehbrecht at dkrz.de
