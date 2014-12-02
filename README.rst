@@ -33,7 +33,7 @@ This recipe supports the following options:
    A list of pkgs to install separated by space.
 
 ``on-update``
-   If set to false conda will not check for updates when running buildout update.
+   If set to false conda will not check for updates when running buildout update. Default: ``false``.
 
 Example usage
 =============
