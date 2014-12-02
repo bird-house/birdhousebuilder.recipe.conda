@@ -60,16 +60,24 @@ class Recipe(object):
         self.prefix = b_options.get('anaconda-home', anaconda_home())
         b_options['anaconda-home'] = self.prefix
         self.conda_channels = b_options.get('conda-channels', 'https://conda.binstar.org/pingucarsti')
+        self.on_update = as_bool(options.get('on-update', 'false'))
 
     def install(self):
         """
         install conda packages
         """
-        pkgs = self.options.get('pkgs', '')
-        return install_pkgs(self.prefix, pkgs, self.conda_channels) 
+        self.execute()
+        return tuple()
 
     def update(self):
-        return self.install()
+        if self.on_update:
+            return self.execute()
+        return tuple()
+
+    def execute(self):
+        pkgs = self.options.get('pkgs', '')
+        install_pkgs(self.prefix, pkgs, self.conda_channels)
+        
 
 def uninstall(name, options):
     pass
