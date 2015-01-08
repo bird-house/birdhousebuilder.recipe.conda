@@ -1,6 +1,11 @@
 Changes
 *******
 
+0.1.3 (2015-01-08)
+==================
+
+* added https://conda.binstar.org/scitools to default channels.
+
 0.1.2 (2014-12-02)
 ==================
 
