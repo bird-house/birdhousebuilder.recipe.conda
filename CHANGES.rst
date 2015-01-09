@@ -1,6 +1,11 @@
 Changes
 *******
 
+0.1.4 (2015-01-09)
+==================
+
+* added https://conda.binstar.org/birdhouse to default channels.
+
 0.1.3 (2015-01-08)
 ==================
 

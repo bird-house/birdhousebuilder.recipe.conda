@@ -59,7 +59,7 @@ class Recipe(object):
         b_options = buildout['buildout']
         self.prefix = b_options.get('anaconda-home', anaconda_home())
         b_options['anaconda-home'] = self.prefix
-        self.conda_channels = b_options.get('conda-channels', 'https://conda.binstar.org/pingucarsti https://conda.binstar.org/scitools')
+        self.conda_channels = b_options.get('conda-channels', 'https://conda.binstar.org/pingucarsti https://conda.binstar.org/birdhouse')
         self.on_update = as_bool(options.get('on-update', 'false'))
 
     def install(self):
