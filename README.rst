@@ -35,6 +35,9 @@ This recipe supports the following options:
 ``channels``
    A list of space separated conda channels (optional). These channels are merged with conda-channels option.
 
+``env``
+   Name of conda environment used for installation (optional). If environment is missing then all packages are installed in the anaconda root environment (``anaconda-home``).
+
 ``on-update``
    If set to false conda will not check for updates when running buildout update. Default: ``false``.
 
@@ -53,5 +56,6 @@ The following example ``buildout.cfg`` installs the conda packages lxml, nose an
   recipe = birdhousebuilder.recipe.conda
   pkgs = lxml nose matplotlib
   channels = birdhouse mychannel
+  env = mytest
   on-update = false
 

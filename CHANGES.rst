@@ -4,6 +4,7 @@ Changes
 0.2.0 (2015-02-23)
 ==================
 
+* conda environments can be created now.
 * added channels option.
 
 0.1.4 (2015-01-09)

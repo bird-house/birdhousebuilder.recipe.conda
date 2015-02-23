@@ -34,13 +34,28 @@ def split_args(args):
             all_args.extend(arg_list)
     return all_args
 
-def install_pkgs(home, pkgs, channels):
+def create_env(prefix, env):
+    from subprocess import check_call
+    from os.path import join
+
+    if env is None or len(env.strip())==0:
+        return
+
+    try:
+        cmd = [join(prefix, 'bin', 'conda')]
+        cmd.extend(['create', '-n', env])
+    except:
+        pass
+
+def install_pkgs(home, pkgs, env=None, channels=[]):
     from subprocess import check_call
     import os
     
     if len(pkgs) > 0:
-        cmd = [os.path.join(home, 'bin/conda')]
+        cmd = [os.path.join(home, 'bin', 'conda')]
         cmd.append('install')
+        if env is not None:
+            cmd.extend(['-n', env])
         cmd.append('--yes')
         for channel in channels:
             cmd.append('-c')
@@ -60,12 +75,14 @@ class Recipe(object):
         self.channels = split_args( b_options.get('conda-channels', 'pingucarsti birdhouse') )
         self.channels.extend( split_args( options.get('channels')) )
         self.on_update = as_bool(options.get('on-update', 'false'))
+        self.env = options.get('env')
         self.pkgs = split_args(options.get('pkgs'))
 
     def install(self):
         """
         install conda packages
         """
+        create_env(self.prefix, self.env)
         self.execute()
         return tuple()
 
@@ -75,7 +92,7 @@ class Recipe(object):
         return tuple()
 
     def execute(self):
-        install_pkgs(self.prefix, self.pkgs, self.channels)
+        install_pkgs(self.prefix, self.pkgs, self.env, self.channels)
         
 def uninstall(name, options):
     pass
