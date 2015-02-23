@@ -5,7 +5,7 @@ This module contains the tool of collective.recipe.cmd
 from setuptools import find_packages
 from setuptools import setup
 
-version = '0.2.0'
+version = '0.2.1'
 description = 'A Buildout recipe to install anaconda packages'
 long_description = (
     open('README.rst').read() + '\n' +
@@ -36,9 +36,9 @@ setup(name='birdhousebuilder.recipe.conda',
           'Topic :: Software Development :: Libraries :: Python Modules',
           'License :: OSI Approved :: BSD License',
       ],
-      keywords='buildout recipe',
-      author='Carsten Ehbrecht',
-      author_email='ehbrecht at dkrz.de',
+      keywords='buildout recipe conda anaconda birdhouse',
+      author='Birdhouse: http://bird-house.github.io/',
+      author_email='',
       url='https://github.com/bird-house/birdhousebuilder.recipe.conda',
       license='BSD',
       packages=find_packages(exclude=['ez_setup']),
