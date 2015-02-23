@@ -38,18 +38,16 @@ def install_pkgs(home, pkgs, channels):
     from subprocess import check_call
     import os
     
-    pkg_list = split_args(pkgs)
-    if len(pkg_list) > 0:
+    if len(pkgs) > 0:
         cmd = [os.path.join(home, 'bin/conda')]
         cmd.append('install')
         cmd.append('--yes')
-        channel_list = split_args(channels)
-        for channel in channel_list:
+        for channel in channels:
             cmd.append('-c')
             cmd.append(channel)
-        cmd.extend(pkg_list)
+        cmd.extend(pkgs)
         check_call(cmd)
-    return pkg_list
+    return pkgs
         
 class Recipe(object):
     """This recipe is used by zc.buildout"""
@@ -59,8 +57,10 @@ class Recipe(object):
         b_options = buildout['buildout']
         self.prefix = b_options.get('anaconda-home', anaconda_home())
         b_options['anaconda-home'] = self.prefix
-        self.conda_channels = b_options.get('conda-channels', 'https://conda.binstar.org/pingucarsti https://conda.binstar.org/birdhouse')
+        self.channels = split_args( b_options.get('conda-channels', 'pingucarsti birdhouse') )
+        self.channels.extend( split_args( options.get('channels')) )
         self.on_update = as_bool(options.get('on-update', 'false'))
+        self.pkgs = split_args(options.get('pkgs'))
 
     def install(self):
         """
@@ -75,10 +75,8 @@ class Recipe(object):
         return tuple()
 
     def execute(self):
-        pkgs = self.options.get('pkgs', '')
-        install_pkgs(self.prefix, pkgs, self.conda_channels)
+        install_pkgs(self.prefix, self.pkgs, self.channels)
         
-
 def uninstall(name, options):
     pass
 

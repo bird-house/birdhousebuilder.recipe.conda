@@ -32,6 +32,9 @@ This recipe supports the following options:
 ``pkgs``
    A list of pkgs to install separated by space.
 
+``channels``
+   A list of space separated conda channels (optional). These channels are merged with conda-channels option.
+
 ``on-update``
    If set to false conda will not check for updates when running buildout update. Default: ``false``.
 
@@ -49,5 +52,6 @@ The following example ``buildout.cfg`` installs the conda packages lxml, nose an
   [conda_pkgs]
   recipe = birdhousebuilder.recipe.conda
   pkgs = lxml nose matplotlib
+  channels = birdhouse mychannel
   on-update = false
 
