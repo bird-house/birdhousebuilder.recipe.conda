@@ -30,13 +30,16 @@ This recipe supports the following options:
    Buildout option (optional) with additional channels of conda packages. 
   
 ``pkgs``
-   A list of pkgs to install separated by space.
+   A list of packages to install separated by space.
 
 ``channels``
    A list of space separated conda channels (optional). These channels are merged with conda-channels option.
 
 ``env``
    Name of conda environment used for installation (optional). If environment is missing then all packages are installed in the anaconda root environment (``anaconda-home``).
+
+``default-pkgs``
+   A list of packages to install when creating environment separated by space (optional). Default: ``python``
 
 ``on-update``
    If set to false conda will not check for updates when running buildout update. Default: ``false``.
@@ -57,5 +60,6 @@ The following example ``buildout.cfg`` installs the conda packages lxml, nose an
   pkgs = lxml nose matplotlib
   channels = birdhouse mychannel
   env = mytest
+  default-pkgs = python
   on-update = false
 

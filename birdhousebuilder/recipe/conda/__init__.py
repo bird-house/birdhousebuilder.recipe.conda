@@ -34,20 +34,43 @@ def split_args(args):
             all_args.extend(arg_list)
     return all_args
 
-def create_env(prefix, env):
+def check_env(prefix, env=None):
+    """returns True if environment exists otherwise False."""
+    from subprocess import check_output
+    from os.path import join
+    
+    if env is None or len(env.strip())==0:
+        return True
+    cmd = [join(prefix, 'bin', 'conda')]
+    cmd.extend(['info', '-e'])
+    output = check_output(cmd)
+    found = False
+    for line in output.splitlines():
+        parts = line.split()
+        if len(parts) == 0:
+            continue
+        if parts[0] == env:
+            found = True
+            break
+    return found
+
+def create_env(prefix, env=None, channels=[], pkgs=['python']):
     from subprocess import check_call
     from os.path import join
 
-    if env is None or len(env.strip())==0:
+    if check_env(prefix, env):
         return
+    
+    cmd = [join(prefix, 'bin', 'conda')]
+    cmd.extend(['create', '-n', env])
+    cmd.append('--yes')
+    for channel in channels:
+        cmd.append('-c')
+        cmd.append(channel)
+    cmd.extend(pkgs)
+    check_call(cmd)
 
-    try:
-        cmd = [join(prefix, 'bin', 'conda')]
-        cmd.extend(['create', '-n', env])
-    except:
-        pass
-
-def install_pkgs(home, pkgs, env=None, channels=[]):
+def install_pkgs(home, env=None, channels=[], pkgs=[]):
     from subprocess import check_call
     import os
     
@@ -74,15 +97,17 @@ class Recipe(object):
         b_options['anaconda-home'] = self.prefix
         self.channels = split_args( b_options.get('conda-channels', 'pingucarsti birdhouse') )
         self.channels.extend( split_args( options.get('channels')) )
+        # make channel list unique
+        self.channels = list(set(self.channels))
         self.on_update = as_bool(options.get('on-update', 'false'))
         self.env = options.get('env')
+        self.default_pkgs = split_args(options.get('default-pkgs', 'python'))
         self.pkgs = split_args(options.get('pkgs'))
 
     def install(self):
         """
         install conda packages
         """
-        create_env(self.prefix, self.env)
         self.execute()
         return tuple()
 
@@ -92,7 +117,8 @@ class Recipe(object):
         return tuple()
 
     def execute(self):
-        install_pkgs(self.prefix, self.pkgs, self.env, self.channels)
+        create_env(self.prefix, self.env, self.channels, self.default_pkgs)
+        install_pkgs(self.prefix, self.env, self.channels, self.pkgs)
         
 def uninstall(name, options):
     pass
