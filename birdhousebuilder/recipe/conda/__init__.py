@@ -34,7 +34,7 @@ def split_args(args):
             all_args.extend(arg_list)
     return all_args
 
-def check_env(prefix, env=None):
+def env_exists(prefix, env=None):
     """returns True if environment exists otherwise False."""
     from subprocess import check_output
     from os.path import join
@@ -58,7 +58,7 @@ def create_env(prefix, env=None, channels=[], pkgs=['python']):
     from subprocess import check_call
     from os.path import join
 
-    if check_env(prefix, env):
+    if env_exists(prefix, env):
         return
     
     cmd = [join(prefix, 'bin', 'conda')]
