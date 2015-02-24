@@ -1,6 +1,12 @@
 Changes
 *******
 
+0.2.1 (2015-02-24)
+==================
+
+* setting ``anaconda-home`` with environment variable ``$ANACONDA_HOME``.
+* separation of install prefix and anaconda-home.
+
 0.2.0 (2015-02-23)
 ==================
 

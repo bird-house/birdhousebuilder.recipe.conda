@@ -1,12 +1,17 @@
 # -*- coding: utf-8 -*-
-# Copyright (C)2014 DKRZ GmbH
+# Copyright (C)2015 DKRZ GmbH
 
 """Recipe conda"""
 
 import os
+from os.path import join
+
+def prefix():
+    # TODO: should not be hard-coded
+    return join(os.environ.get('HOME', ''), '.conda', 'envs', 'birdhouse')
 
 def anaconda_home():
-    return os.path.join(os.environ.get('HOME', ''), "anaconda")
+    return os.environ.get('ANACONDA_HOME', join(os.environ.get('HOME', ''), 'anaconda'))
 
 def as_bool(value):
     if value.lower() in ('1', 'true'):
@@ -37,7 +42,6 @@ def split_args(args):
 def env_exists(prefix, env=None):
     """returns True if environment exists otherwise False."""
     from subprocess import check_output
-    from os.path import join
     
     if env is None or len(env.strip())==0:
         return True
@@ -56,7 +60,6 @@ def env_exists(prefix, env=None):
 
 def create_env(prefix, env=None, channels=[], pkgs=['python']):
     from subprocess import check_call
-    from os.path import join
 
     if env_exists(prefix, env):
         return
@@ -70,12 +73,11 @@ def create_env(prefix, env=None, channels=[], pkgs=['python']):
     cmd.extend(pkgs)
     check_call(cmd)
 
-def install_pkgs(home, env=None, channels=[], pkgs=[]):
+def install_pkgs(prefix, env=None, channels=[], pkgs=[]):
     from subprocess import check_call
-    import os
     
     if len(pkgs) > 0:
-        cmd = [os.path.join(home, 'bin', 'conda')]
+        cmd = [join(prefix, 'bin', 'conda')]
         cmd.append('install')
         if env is not None:
             cmd.extend(['-n', env])
@@ -88,14 +90,16 @@ def install_pkgs(home, env=None, channels=[], pkgs=[]):
     return pkgs
         
 class Recipe(object):
-    """This recipe is used by zc.buildout"""
+    """This recipe is used by zc.buildout.
+    It install conda packages."""
 
     def __init__(self, buildout, name, options):
         self.buildout, self.name, self.options = buildout, name, options
         b_options = buildout['buildout']
-        self.prefix = b_options.get('anaconda-home', anaconda_home())
-        b_options['anaconda-home'] = self.prefix
-        self.channels = split_args( b_options.get('conda-channels', 'pingucarsti birdhouse') )
+        self.anaconda_home = b_options.get('anaconda-home', anaconda_home())
+        b_options['anaconda-home'] = self.anaconda_home
+        
+        self.channels = split_args( b_options.get('conda-channels', 'birdhouse') )
         self.channels.extend( split_args( options.get('channels')) )
         # make channel list unique
         self.channels = list(set(self.channels))
@@ -117,8 +121,8 @@ class Recipe(object):
         return tuple()
 
     def execute(self):
-        create_env(self.prefix, self.env, self.channels, self.default_pkgs)
-        install_pkgs(self.prefix, self.env, self.channels, self.pkgs)
+        create_env(self.anaconda_home, self.env, self.channels, self.default_pkgs)
+        install_pkgs(self.anaconda_home, self.env, self.channels, self.pkgs)
         
 def uninstall(name, options):
     pass
