@@ -27,14 +27,15 @@ This recipe supports the following options:
 ``anaconda-home``
    Buildout option with the root folder of the Anaconda installation. Default: ``$HOME/anaconda``.
    The default location can also be set with the environment variable ``ANACONDA_HOME``. Example::
+
      export ANACONDA_HOME=/opt/anaconda
 
    Search priority is:
+
    1. ``anaconda-home`` in ``buildout.cfg``
    2. ``$ANACONDA_HOME``
    3. ``$HOME/anaconda``
   
-
 ``conda-channels``
    Buildout option (optional) with additional channels of conda packages. 
   
