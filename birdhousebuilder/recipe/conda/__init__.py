@@ -98,6 +98,8 @@ class Recipe(object):
         b_options = buildout['buildout']
         self.anaconda_home = b_options.get('anaconda-home', anaconda_home())
         b_options['anaconda-home'] = self.anaconda_home
+        self.prefix = b_options.get('prefix', prefix())
+        b_options['prefix'] = self.prefix
         
         self.channels = split_args( b_options.get('conda-channels', 'birdhouse') )
         self.channels.extend( split_args( options.get('channels')) )
