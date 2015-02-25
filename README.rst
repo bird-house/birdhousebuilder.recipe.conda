@@ -62,13 +62,13 @@ The following example ``buildout.cfg`` installs the conda packages lxml, nose an
   [buildout]
   parts = conda_pkgs
 
-  anaconda-home = /home/myself/anaconda
-  conda-channels = https://conda.binstar.org/myself
+  anaconda-home = /opt/anaconda
+  conda-channels = birdhouse
 
   [conda_pkgs]
   recipe = birdhousebuilder.recipe.conda
-  pkgs = lxml nose matplotlib
-  channels = birdhouse mychannel
+  pkgs = lxml nose matplotlib owslib
+  channels = birdhouse asmeurer
   env = mytest
   default-pkgs = python
   on-update = false
