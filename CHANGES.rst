@@ -1,6 +1,11 @@
 Changes
 *******
 
+0.2.2 (2015-02-25)
+==================
+
+* sets buildout:prefix option as installation default directory for birdhouse.
+
 0.2.1 (2015-02-24)
 ==================
 
