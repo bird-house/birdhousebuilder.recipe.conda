@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-# Copyright (C)2015 DKRZ GmbH
 
 """Recipe conda"""
 
@@ -7,8 +6,9 @@ import os
 from os.path import join
 
 def prefix():
-    # TODO: should not be hard-coded
-    return join(os.environ.get('HOME', ''), '.conda', 'envs', 'birdhouse')
+    conda_envs_dir = os.environ.get('CONDA_ENVS_DIR', join(os.environ.get('HOME', ''), '.conda', 'envs'))
+    # TODO: env should not be hard-coded
+    return join(conda_envs_dir, 'birdhouse')
 
 def anaconda_home():
     return os.environ.get('ANACONDA_HOME', join(os.environ.get('HOME', ''), 'anaconda'))
@@ -96,6 +96,7 @@ class Recipe(object):
     def __init__(self, buildout, name, options):
         self.buildout, self.name, self.options = buildout, name, options
         b_options = buildout['buildout']
+        # TODO: allow overwrite of anaconda_home
         self.anaconda_home = b_options.get('anaconda-home', anaconda_home())
         b_options['anaconda-home'] = self.anaconda_home
         self.prefix = b_options.get('prefix', prefix())

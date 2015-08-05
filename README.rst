@@ -16,7 +16,7 @@ Introduction
 Usage
 *****
 
-The recipe requires that Anaconda is already installed. It assumes that the default Anaconda location is in your home directory ``~/anaconda``. Otherwise you need to set the ``ANACONDA_HOME`` environment variable or the Buildout option ``anaconda-home``.
+The recipe requires that Anaconda is already installed. It assumes that the default Anaconda location is in your home directory ``~/anaconda``. Otherwise you need to set the ``ANACONDA_HOME`` environment variable.
 
 
 Supported options
@@ -46,7 +46,7 @@ This recipe supports the following options:
    A list of space separated conda channels (optional). These channels are merged with conda-channels option.
 
 ``env``
-   Name of conda environment used for installation (optional). If environment is missing then all packages are installed in the anaconda root environment (``anaconda-home``).
+   Name of conda environment used for installation (optional). If environment is missing then all packages are installed in the birdhouse environment (``birdhouse``).
 
 ``default-pkgs``
    A list of packages to install when creating environment separated by space (optional). Default: ``python``
@@ -62,7 +62,6 @@ The following example ``buildout.cfg`` installs the conda packages lxml, nose an
   [buildout]
   parts = conda_pkgs
 
-  anaconda-home = /opt/anaconda
   conda-channels = birdhouse
 
   [conda_pkgs]
