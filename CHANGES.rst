@@ -1,7 +1,7 @@
 Changes
 *******
 
-0.2.3 (2015-08-05)
+0.2.4444 (2015-08-05)
 ==================
 
 * use CONDA_ENVS_DIR to overwrite base dir of conda environments. 
