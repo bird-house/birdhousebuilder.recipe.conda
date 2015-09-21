@@ -101,6 +101,9 @@ class Recipe(object):
         b_options['anaconda-home'] = self.anaconda_home
         self.prefix = b_options.get('prefix', prefix())
         b_options['prefix'] = self.prefix
+
+        # offline mode
+        self.offline = as_bool(b_options.get('offline', 'false'))
         
         self.channels = split_args( b_options.get('conda-channels', 'birdhouse') )
         self.channels.extend( split_args( options.get('channels')) )
@@ -125,7 +128,8 @@ class Recipe(object):
 
     def execute(self):
         create_env(self.anaconda_home, self.env, self.channels, self.default_pkgs)
-        install_pkgs(self.anaconda_home, self.env, self.channels, self.pkgs)
+        if not self.offline:
+            install_pkgs(self.anaconda_home, self.env, self.channels, self.pkgs)
         
 def uninstall(name, options):
     pass

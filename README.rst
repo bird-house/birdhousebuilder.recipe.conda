@@ -54,6 +54,10 @@ This recipe supports the following options:
 ``on-update``
    If set to false conda will not check for updates when running buildout update. Default: ``false``.
 
+.. note::
+
+   If buildout is run in offline mode no network connection will be establish and conda packages will not be installed.
+
 Example usage
 =============
 

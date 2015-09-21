@@ -1,6 +1,11 @@
 Changes
 *******
 
+0.2.5 (2015-09-21)
+==================
+
+* use buildout offline option ... don't establish internet connection when enabled.
+
 0.2.4 (2015-08-05)
 ==================
 
