@@ -24,34 +24,36 @@ Supported options
 
 This recipe supports the following options:
 
-``anaconda-home``
+**anaconda-home**
    Buildout option with the root folder of the Anaconda installation. Default: ``$HOME/anaconda``.
-   The default location can also be set with the environment variable ``ANACONDA_HOME``. Example::
+   The default location can also be set with the environment variable ``ANACONDA_HOME``. Example:
+
+.. code-block:: sh
 
      export ANACONDA_HOME=/opt/anaconda
 
-   Search priority is:
+Search priority is:
 
-   1. ``anaconda-home`` in ``buildout.cfg``
-   2. ``$ANACONDA_HOME``
-   3. ``$HOME/anaconda``
+1. ``anaconda-home`` in ``buildout.cfg``
+2. ``$ANACONDA_HOME``
+3. ``$HOME/anaconda``
   
-``conda-channels``
-   Buildout option (optional) with additional channels of conda packages. 
+**conda-channels**
+   Buildout option (optional) with additional channels of conda packages. Default: birdhouse ioos
   
-``pkgs``
+**pkgs**
    A list of packages to install separated by space.
 
-``channels``
+**channels**
    A list of space separated conda channels (optional). These channels are merged with conda-channels option.
 
-``env``
+**env**
    Name of conda environment used for installation (optional). If environment is missing then all packages are installed in the birdhouse environment (``birdhouse``).
 
-``default-pkgs``
+**default-pkgs**
    A list of packages to install when creating environment separated by space (optional). Default: ``python``
 
-``on-update``
+**on-update**
    If set to false conda will not check for updates when running buildout update. Default: ``false``.
 
 .. note::
@@ -61,7 +63,9 @@ This recipe supports the following options:
 Example usage
 =============
 
-The following example ``buildout.cfg`` installs the conda packages lxml, nose and matplotlib::
+The following example ``buildout.cfg`` installs the conda packages lxml, nose and matplotlib:
+
+.. code-block:: sh
 
   [buildout]
   parts = conda_pkgs
