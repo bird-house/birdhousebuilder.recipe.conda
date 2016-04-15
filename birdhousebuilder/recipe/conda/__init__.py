@@ -105,7 +105,7 @@ class Recipe(object):
         # offline mode
         self.offline = as_bool(b_options.get('offline', 'false'))
         
-        self.channels = split_args( b_options.get('conda-channels', 'birdhouse ioos') )
+        self.channels = split_args( b_options.get('conda-channels', 'birdhouse') )
         self.channels.extend( split_args( options.get('channels')) )
         # make channel list unique
         self.channels = list(set(self.channels))
