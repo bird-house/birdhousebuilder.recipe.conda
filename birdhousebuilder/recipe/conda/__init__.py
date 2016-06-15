@@ -118,7 +118,7 @@ class Recipe(object):
         # make channel list unique
         self.channels = list(set(self.channels))
         self.on_update = as_bool(options.get('on-update', 'false'))
-        self.env = options.get('env')
+        self.env = options.get('env', b_options.get('conda-env'))
         self.default_pkgs = split_args(options.get('default-pkgs', 'python=2 pip'))
         self.pkgs = split_args(options.get('pkgs'))
         self.pip_pkgs = split_args(options.get('pip'))
