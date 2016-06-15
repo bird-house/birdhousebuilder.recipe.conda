@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 
 """Recipe conda"""
-
 import os
 from os.path import join
+import yaml
+from subprocess import check_output, check_call
 
 def prefix():
     conda_envs_dir = os.environ.get('CONDA_ENVS_DIR', join(os.environ.get('HOME', ''), '.conda', 'envs'))
@@ -39,29 +40,24 @@ def split_args(args):
             all_args.extend(arg_list)
     return all_args
 
+def conda_info(prefix):
+    """returns conda infos"""
+    cmd = [join(prefix, 'bin', 'conda')]
+    cmd.extend(['info', '--json'])
+    output = check_output(cmd)
+    return yaml.load(output)
+
+def conda_envs(prefix):
+    info = conda_info(prefix)
+    env_names = [a_env.split('/')[-1] for a_env in info['envs']]
+    return dict(zip(env_names, info['envs']))
+    
 def env_exists(prefix, env=None):
     """returns True if environment exists otherwise False."""
-    from subprocess import check_output
-    
-    if env is None or len(env.strip())==0:
-        return True
-    cmd = [join(prefix, 'bin', 'conda')]
-    cmd.extend(['info', '-e'])
-    output = check_output(cmd)
-    found = False
-    for line in output.splitlines():
-        parts = line.split()
-        if len(parts) == 0:
-            continue
-        if parts[0] == env:
-            found = True
-            break
-    return found
+    return env in conda_envs(prefix)
 
-def create_env(prefix, env=None, channels=[], pkgs=['python']):
-    from subprocess import check_call
-
-    if env_exists(prefix, env):
+def create_env(prefix, env=None, channels=[], pkgs=['python=2 pip']):
+    if not env or env_exists(prefix, env):
         return
     
     cmd = [join(prefix, 'bin', 'conda')]
@@ -74,8 +70,10 @@ def create_env(prefix, env=None, channels=[], pkgs=['python']):
     check_call(cmd)
 
 def install_pkgs(prefix, env=None, channels=[], pkgs=[]):
-    from subprocess import check_call
-    
+    """
+    TODO: maybe use offline option
+    TODO: maybe use conda as python package
+    """
     if len(pkgs) > 0:
         cmd = [join(prefix, 'bin', 'conda')]
         cmd.append('install')
@@ -88,7 +86,17 @@ def install_pkgs(prefix, env=None, channels=[], pkgs=[]):
         cmd.extend(pkgs)
         check_call(cmd)
     return pkgs
-        
+
+def install_pip(prefix, env=None, pkgs=[]):
+    if len(pkgs) > 0:
+        envs = conda_envs(prefix)
+        env_path = envs.get(env, prefix)
+        cmd = [join(env_path, 'bin', 'pip')]
+        cmd.append('install')
+        cmd.extend(pkgs)
+        check_call(cmd)
+    return pkgs
+
 class Recipe(object):
     """This recipe is used by zc.buildout.
     It install conda packages."""
@@ -111,8 +119,9 @@ class Recipe(object):
         self.channels = list(set(self.channels))
         self.on_update = as_bool(options.get('on-update', 'false'))
         self.env = options.get('env')
-        self.default_pkgs = split_args(options.get('default-pkgs', 'python'))
+        self.default_pkgs = split_args(options.get('default-pkgs', 'python=2 pip'))
         self.pkgs = split_args(options.get('pkgs'))
+        self.pip_pkgs = split_args(options.get('pip'))
 
     def install(self):
         """
@@ -130,6 +139,7 @@ class Recipe(object):
         create_env(self.anaconda_home, self.env, self.channels, self.default_pkgs)
         if not self.offline:
             install_pkgs(self.anaconda_home, self.env, self.channels, self.pkgs)
+            install_pip(self.anaconda_home, self.env, self.pip_pkgs)
         
 def uninstall(name, options):
     pass
