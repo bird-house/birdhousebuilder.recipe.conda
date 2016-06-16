@@ -40,27 +40,27 @@ def split_args(args):
             all_args.extend(arg_list)
     return all_args
 
-def conda_info(prefix):
+def conda_info(anaconda_home):
     """returns conda infos"""
-    cmd = [join(prefix, 'bin', 'conda')]
+    cmd = [join(anaconda_home, 'bin', 'conda')]
     cmd.extend(['info', '--json'])
     output = check_output(cmd)
     return yaml.load(output)
 
-def conda_envs(prefix):
-    info = conda_info(prefix)
+def conda_envs(anaconda_home):
+    info = conda_info(anaconda_home)
     env_names = [a_env.split('/')[-1] for a_env in info['envs']]
     return dict(zip(env_names, info['envs']))
     
-def env_exists(prefix, env=None):
+def env_exists(anaconda_home, env=None):
     """returns True if environment exists otherwise False."""
-    return env in conda_envs(prefix)
+    return env in conda_envs(anaconda_home)
 
-def create_env(prefix, env=None, channels=[], pkgs=['python=2 pip']):
-    if not env or env_exists(prefix, env):
+def create_env(anaconda_home, env=None, channels=[], pkgs=['python=2 pip']):
+    if not env or env_exists(anaconda_home, env):
         return
     
-    cmd = [join(prefix, 'bin', 'conda')]
+    cmd = [join(anaconda_home, 'bin', 'conda')]
     cmd.extend(['create', '-n', env])
     cmd.append('--yes')
     for channel in channels:
@@ -69,13 +69,13 @@ def create_env(prefix, env=None, channels=[], pkgs=['python=2 pip']):
     cmd.extend(pkgs)
     check_call(cmd)
 
-def install_pkgs(prefix, env=None, channels=[], pkgs=[]):
+def install_pkgs(anaconda_home, env=None, channels=[], pkgs=[]):
     """
     TODO: maybe use offline option
     TODO: maybe use conda as python package
     """
     if len(pkgs) > 0:
-        cmd = [join(prefix, 'bin', 'conda')]
+        cmd = [join(anaconda_home, 'bin', 'conda')]
         cmd.append('install')
         if env is not None:
             cmd.extend(['-n', env])
@@ -87,10 +87,10 @@ def install_pkgs(prefix, env=None, channels=[], pkgs=[]):
         check_call(cmd)
     return pkgs
 
-def install_pip(prefix, env=None, pkgs=[]):
+def install_pip(anaconda_home, env=None, pkgs=[]):
     if len(pkgs) > 0:
-        envs = conda_envs(prefix)
-        env_path = envs.get(env, prefix)
+        envs = conda_envs(anaconda_home)
+        env_path = envs.get(env, anaconda_home)
         cmd = [join(env_path, 'bin', 'pip')]
         cmd.append('install')
         cmd.extend(pkgs)
