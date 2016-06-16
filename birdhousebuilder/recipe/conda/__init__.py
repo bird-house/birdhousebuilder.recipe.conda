@@ -6,13 +6,23 @@ from os.path import join
 import yaml
 from subprocess import check_output, check_call
 
+import logging
+logging.basicConfig(format='%(message)s', level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 def prefix():
-    conda_envs_dir = os.environ.get('CONDA_ENVS_DIR', join(os.environ.get('HOME', ''), '.conda', 'envs'))
-    # TODO: env should not be hard-coded
-    return join(conda_envs_dir, 'birdhouse')
+    # TODO: remove this function
+    return join(os.environ.get('HOME', '/opt'), 'birdhouse')
 
 def anaconda_home():
-    return os.environ.get('ANACONDA_HOME', join(os.environ.get('HOME', ''), 'anaconda'))
+    """Tries to guess the home of the conda installation:
+       * ${CONDA_ENV_PATH}  (set by conda env)
+       * ${HOME}/anaconda
+       * /opt/anaconda
+    """
+    home = os.environ.get('CONDA_ENV_PATH', join(os.environ.get('HOME', '/opt'), 'anaconda'))
+    logger.info("Using CONDA_ENV_PATH %s", home)
+    return home
 
 def as_bool(value):
     if value.lower() in ('1', 'true'):
@@ -40,57 +50,75 @@ def split_args(args):
             all_args.extend(arg_list)
     return all_args
 
-def conda_info(anaconda_home):
+def conda_env_path(buildout, options):
+    b_options = buildout['buildout']
+
+    # buildout option anaconda-home overwrites default conda env path
+    conda_home = b_options.get('anaconda-home', anaconda_home())
+    
+    env = options.get('env', b_options.get('conda-env'))
+    env_path = conda_envs(conda_home).get(env, conda_home)
+    return env_path
+    
+def conda_info(prefix):
     """returns conda infos"""
-    cmd = [join(anaconda_home, 'bin', 'conda')]
+    cmd = [join(prefix, 'bin', 'conda')]
     cmd.extend(['info', '--json'])
     output = check_output(cmd)
     return yaml.load(output)
 
-def conda_envs(anaconda_home):
-    info = conda_info(anaconda_home)
+def conda_envs(prefix):
+    info = conda_info(prefix)
     env_names = [a_env.split('/')[-1] for a_env in info['envs']]
     return dict(zip(env_names, info['envs']))
     
-def env_exists(anaconda_home, env=None):
+def env_exists(prefix, env=None):
     """returns True if environment exists otherwise False."""
-    return env in conda_envs(anaconda_home)
+    return env in conda_envs(prefix)
 
-def create_env(anaconda_home, env=None, channels=[], pkgs=['python=2 pip']):
-    if not env or env_exists(anaconda_home, env):
+def create_env(prefix, env=None, channels=[], pkgs=[]):
+    if not env or env_exists(prefix, env):
         return
+
+    logger.info("Creating conda environment %s ...", env)
     
-    cmd = [join(anaconda_home, 'bin', 'conda')]
+    cmd = [join(prefix, 'bin', 'conda')]
     cmd.extend(['create', '-n', env])
     cmd.append('--yes')
     for channel in channels:
-        cmd.append('-c')
-        cmd.append(channel)
+        cmd.extend(['-c', channel])
     cmd.extend(pkgs)
     check_call(cmd)
 
-def install_pkgs(anaconda_home, env=None, channels=[], pkgs=[]):
+def install_pkgs(prefix, env=None, channels=None, pkgs=None):
     """
     TODO: maybe use offline option
     TODO: maybe use conda as python package
     """
-    if len(pkgs) > 0:
-        cmd = [join(anaconda_home, 'bin', 'conda')]
+    if pkgs:
+        logger.info("Installing conda packages ...")
+        cmd = [join(prefix, 'bin', 'conda')]
         cmd.append('install')
-        if env is not None:
+        if env:
+            logger.info("... in conda environment %s ...", env)
             cmd.extend(['-n', env])
         cmd.append('--yes')
-        for channel in channels:
-            cmd.append('-c')
-            cmd.append(channel)
+        if channels:
+            logger.info("... with conda channels: %s ...", ', '.join(channels))
+            for channel in channels:
+                cmd.append('-c')
+                cmd.append(channel)
         cmd.extend(pkgs)
         check_call(cmd)
     return pkgs
 
-def install_pip(anaconda_home, env=None, pkgs=[]):
-    if len(pkgs) > 0:
-        envs = conda_envs(anaconda_home)
-        env_path = envs.get(env, anaconda_home)
+def install_pip(prefix, env=None, pkgs=None):
+    if pkgs:
+        envs = conda_envs(prefix)
+        env_path = envs.get(env, prefix)
+
+        logger.info("Installing pip packages in conda env path %s", env_path)
+        
         cmd = [join(env_path, 'bin', 'pip')]
         cmd.append('install')
         cmd.extend(pkgs)
@@ -104,20 +132,22 @@ class Recipe(object):
     def __init__(self, buildout, name, options):
         self.buildout, self.name, self.options = buildout, name, options
         b_options = buildout['buildout']
-        # TODO: allow overwrite of anaconda_home
+
+        # buildout option anaconda-home overwrites default conda env path
         self.anaconda_home = b_options.get('anaconda-home', anaconda_home())
         b_options['anaconda-home'] = self.anaconda_home
-        self.prefix = b_options.get('prefix', prefix())
-        b_options['prefix'] = self.prefix
 
         # offline mode
         self.offline = as_bool(b_options.get('offline', 'false'))
+        self.on_update = as_bool(options.get('on-update', 'false'))
+
+        # channels option can be overwritten by buildout conda-channels option
+        self.channels = split_args( options.get('channels', b_options.get('conda-channels', 'birdhouse')) )
         
-        self.channels = split_args( b_options.get('conda-channels', 'birdhouse') )
-        self.channels.extend( split_args( options.get('channels')) )
         # make channel list unique
         self.channels = list(set(self.channels))
-        self.on_update = as_bool(options.get('on-update', 'false'))
+            
+        # env option can be overwritten by buildout conda-env option
         self.env = options.get('env', b_options.get('conda-env'))
         self.default_pkgs = split_args(options.get('default-pkgs', 'python=2 pip'))
         self.pkgs = split_args(options.get('pkgs'))
