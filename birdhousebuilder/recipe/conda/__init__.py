@@ -7,22 +7,6 @@ import yaml
 from subprocess import check_output, check_call
 
 import logging
-logging.basicConfig(format='%(message)s', level=logging.INFO)
-logger = logging.getLogger(__name__)
-
-def prefix():
-    # TODO: remove this function
-    return join(os.environ.get('HOME', '/opt'), 'birdhouse')
-
-def anaconda_home():
-    """Tries to guess the home of the conda installation:
-       * ${CONDA_ENV_PATH}  (set by conda env)
-       * ${HOME}/anaconda
-       * /opt/anaconda
-    """
-    home = os.environ.get('CONDA_ENV_PATH', join(os.environ.get('HOME', '/opt'), 'anaconda'))
-    logger.info("Using CONDA_ENV_PATH %s", home)
-    return home
 
 def as_bool(value):
     if value.lower() in ('1', 'true'):
@@ -53,13 +37,17 @@ def split_args(args):
 def conda_env_path(buildout, options):
     b_options = buildout['buildout']
 
-    # buildout option anaconda-home overwrites default conda env path
-    conda_home = b_options.get('anaconda-home', anaconda_home())
-    
+    # get conda prefix from conda_env_path or anaconda_home
+    conda_prefix = os.environ.get('CONDA_ENV_PATH', b_options.get('anaconda-home', '/opt/anaconda'))
+
+    # use optional env
     env = options.get('env', b_options.get('conda-env'))
-    env_path = conda_envs(conda_home).get(env, conda_home)
+    if env:
+        env_path = conda_envs(conda_prefix).get(env, conda_prefix)
+    else:
+        env_path = conda_prefix
     return env_path
-    
+
 def conda_info(prefix):
     """returns conda infos"""
     cmd = [join(prefix, 'bin', 'conda')]
@@ -76,55 +64,6 @@ def env_exists(prefix, env=None):
     """returns True if environment exists otherwise False."""
     return env in conda_envs(prefix)
 
-def create_env(prefix, env=None, channels=[], pkgs=[]):
-    if not env or env_exists(prefix, env):
-        return
-
-    logger.info("Creating conda environment %s ...", env)
-    
-    cmd = [join(prefix, 'bin', 'conda')]
-    cmd.extend(['create', '-n', env])
-    cmd.append('--yes')
-    for channel in channels:
-        cmd.extend(['-c', channel])
-    cmd.extend(pkgs)
-    check_call(cmd)
-
-def install_pkgs(prefix, env=None, channels=None, pkgs=None):
-    """
-    TODO: maybe use offline option
-    TODO: maybe use conda as python package
-    """
-    if pkgs:
-        logger.info("Installing conda packages ...")
-        cmd = [join(prefix, 'bin', 'conda')]
-        cmd.append('install')
-        if env:
-            logger.info("... in conda environment %s ...", env)
-            cmd.extend(['-n', env])
-        cmd.append('--yes')
-        if channels:
-            logger.info("... with conda channels: %s ...", ', '.join(channels))
-            for channel in channels:
-                cmd.append('-c')
-                cmd.append(channel)
-        cmd.extend(pkgs)
-        check_call(cmd)
-    return pkgs
-
-def install_pip(prefix, env=None, pkgs=None):
-    if pkgs:
-        envs = conda_envs(prefix)
-        env_path = envs.get(env, prefix)
-
-        logger.info("Installing pip packages in conda env path %s", env_path)
-        
-        cmd = [join(env_path, 'bin', 'pip')]
-        cmd.append('install')
-        cmd.extend(pkgs)
-        check_call(cmd)
-    return pkgs
-
 class Recipe(object):
     """This recipe is used by zc.buildout.
     It install conda packages."""
@@ -133,10 +72,15 @@ class Recipe(object):
         self.buildout, self.name, self.options = buildout, name, options
         b_options = buildout['buildout']
 
+        self.logger = logging.getLogger(self.name)
+
         # buildout option anaconda-home overwrites default conda env path
-        self.anaconda_home = b_options.get('anaconda-home', anaconda_home())
+        self.anaconda_home = b_options.get('anaconda-home', '/opt/anaconda')
         b_options['anaconda-home'] = self.anaconda_home
 
+        # conda prefix
+        self.prefix = os.environ.get('CONDA_ENV_PATH', self.anaconda_home)
+        
         # offline mode
         self.offline = as_bool(b_options.get('offline', 'false'))
         self.on_update = as_bool(options.get('on-update', 'false'))
@@ -153,23 +97,71 @@ class Recipe(object):
         self.pkgs = split_args(options.get('pkgs'))
         self.pip_pkgs = split_args(options.get('pip'))
 
-    def install(self):
+    def install(self, update=False):
         """
         install conda packages
         """
-        self.execute()
-        return tuple()
+        return self.execute(update=update)
 
     def update(self):
-        if self.on_update:
-            return self.execute()
+        return self.install(update=True)
+    
+    def execute(self, update=False):
+        if not update or self.on_update:
+            self._create_env(self.prefix, self.env, self.channels, self.default_pkgs)
+            if not self.offline:
+                self._install_pkgs(self.prefix, self.env, self.channels, self.pkgs)
+                self._install_pip(self.prefix, self.env, self.pip_pkgs)
         return tuple()
 
-    def execute(self):
-        create_env(self.anaconda_home, self.env, self.channels, self.default_pkgs)
-        if not self.offline:
-            install_pkgs(self.anaconda_home, self.env, self.channels, self.pkgs)
-            install_pip(self.anaconda_home, self.env, self.pip_pkgs)
+    def _create_env(self, prefix, env=None, channels=[], pkgs=[]):
+        if not env or env_exists(prefix, env):
+            return
+
+        self.logger.info("Creating conda environment %s ...", env)
+
+        cmd = [join(prefix, 'bin', 'conda')]
+        cmd.extend(['create', '-n', env])
+        cmd.append('--yes')
+        for channel in channels:
+            cmd.extend(['-c', channel])
+        cmd.extend(pkgs)
+        check_call(cmd)
+    
+    def _install_pkgs(self, prefix, env=None, channels=None, pkgs=None):
+        """
+        TODO: maybe use offline option
+        TODO: maybe use conda as python package
+        """
+        if pkgs:
+            self.logger.info("Installing conda packages ...")
+            cmd = [join(prefix, 'bin', 'conda')]
+            cmd.append('install')
+            if env:
+                self.logger.info("... in conda environment %s ...", env)
+                cmd.extend(['-n', env])
+            cmd.append('--yes')
+            if channels:
+                self.logger.info("... with conda channels: %s ...", ', '.join(channels))
+                for channel in channels:
+                    cmd.append('-c')
+                    cmd.append(channel)
+            cmd.extend(pkgs)
+            check_call(cmd)
+        return pkgs
+
+    def _install_pip(self, prefix, env=None, pkgs=None):
+        if pkgs:
+            envs = conda_envs(prefix)
+            env_path = envs.get(env, prefix)
+
+            self.logger.info("Installing pip packages in conda env path %s", env_path)
+
+            cmd = [join(env_path, 'bin', 'pip')]
+            cmd.append('install')
+            cmd.extend(pkgs)
+            check_call(cmd)
+        return pkgs
         
 def uninstall(name, options):
     pass
