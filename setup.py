@@ -45,7 +45,8 @@ setup(name='birdhousebuilder.recipe.conda',
       include_package_data=True,
       zip_safe=False,
       install_requires=['setuptools',
-                        'zc.buildout'
+                        'zc.buildout',
+			'pyyaml',
                         # -*- Extra requirements: -*-
                         ],
       tests_require=tests_require,
