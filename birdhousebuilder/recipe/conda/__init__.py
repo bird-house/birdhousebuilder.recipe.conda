@@ -83,7 +83,6 @@ class Recipe(object):
         
         # offline mode
         self.offline = as_bool(b_options.get('offline', 'false'))
-        self.on_update = as_bool(options.get('on-update', 'false'))
 
         # channels option can be overwritten by buildout conda-channels option
         self.channels = split_args( options.get('channels', b_options.get('conda-channels', 'birdhouse')) )
@@ -107,28 +106,32 @@ class Recipe(object):
         return self.install(update=True)
     
     def execute(self, update=False):
-        if not update or self.on_update:
-            self._create_env(self.prefix, self.env, self.channels, self.default_pkgs)
-            if not self.offline:
-                self._install_pkgs(self.prefix, self.env, self.channels, self.pkgs)
-                self._install_pip(self.prefix, self.env, self.pip_pkgs)
+        offline = self.offline or update
+        self._create_env(self.prefix, self.env, self.channels, self.default_pkgs, offline)
+        self._install_pkgs(self.prefix, self.env, self.channels, self.pkgs, offline)
+        self._install_pip(self.prefix, self.env, self.pip_pkgs, offline)
         return tuple()
 
-    def _create_env(self, prefix, env=None, channels=[], pkgs=[]):
-        if not env or env_exists(prefix, env):
+    def _create_env(self, prefix, env=None, channels=None, pkgs=None, offline=False, update_deps=True):
+        if not env or env_exists(prefix, env) or not pkgs:
             return
 
         self.logger.info("Creating conda environment %s ...", env)
 
         cmd = [join(prefix, 'bin', 'conda')]
         cmd.extend(['create', '-n', env])
+        if offline:
+            cmd.append('--offline')
+        if not update_deps:
+            cmd.append('--no-update-deps')
         cmd.append('--yes')
-        for channel in channels:
-            cmd.extend(['-c', channel])
+        if channels:
+            for channel in channels:
+                cmd.extend(['-c', channel])
         cmd.extend(pkgs)
         check_call(cmd)
     
-    def _install_pkgs(self, prefix, env=None, channels=None, pkgs=None):
+    def _install_pkgs(self, prefix, env=None, channels=None, pkgs=None, offline=False, update_deps=True):
         """
         TODO: maybe use offline option
         TODO: maybe use conda as python package
@@ -137,6 +140,10 @@ class Recipe(object):
             self.logger.info("Installing conda packages ...")
             cmd = [join(prefix, 'bin', 'conda')]
             cmd.append('install')
+            if offline:
+                cmd.append('--offline')
+            if not update_deps:
+                cmd.append('--no-update-deps')
             if env:
                 self.logger.info("... in conda environment %s ...", env)
                 cmd.extend(['-n', env])
@@ -150,8 +157,8 @@ class Recipe(object):
             check_call(cmd)
         return pkgs
 
-    def _install_pip(self, prefix, env=None, pkgs=None):
-        if pkgs:
+    def _install_pip(self, prefix, env=None, pkgs=None, offline=False):
+        if not offline and pkgs:
             envs = conda_envs(prefix)
             env_path = envs.get(env, prefix)
 
