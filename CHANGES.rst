@@ -1,9 +1,10 @@
 Changes
 *******
 
-0.3.0 (2016-06-15)
+0.3.0 (2016-06-19)
 ==================
 
+* using conda offline mode.
 * install pip packages.
 
 0.2.7 (2016-04-15)
