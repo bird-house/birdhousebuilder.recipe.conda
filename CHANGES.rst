@@ -4,6 +4,7 @@ Changes
 0.3.0 (2016-06-19)
 ==================
 
+* using bool_option from zc.buildout.
 * using conda offline mode.
 * install pip packages.
 
