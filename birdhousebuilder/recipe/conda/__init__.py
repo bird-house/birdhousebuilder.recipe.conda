@@ -10,17 +10,6 @@ from zc.buildout.buildout import bool_option
 
 import logging
 
-def as_bool(value):
-    if value.lower() in ('1', 'true'):
-        return True
-    return False
-
-def makedirs(dirname):
-    try:
-        os.makedirs(dirname)
-    except OSError:
-        pass
-
 def split_args(args):
     if args is None:
         return []
