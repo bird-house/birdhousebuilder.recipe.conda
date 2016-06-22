@@ -25,20 +25,6 @@ def split_args(args):
             all_args.extend(arg_list)
     return all_args
 
-def conda_env_path(buildout, options):
-    b_options = buildout['buildout']
-
-    # get conda prefix from conda_env_path or anaconda_home
-    conda_prefix = os.environ.get('CONDA_ENV_PATH', b_options.get('anaconda-home', '/opt/anaconda'))
-
-    # use optional env
-    env = options.get('env', b_options.get('conda-env'))
-    if env:
-        env_path = conda_envs(conda_prefix).get(env, conda_prefix)
-    else:
-        env_path = conda_prefix
-    return env_path
-
 def conda_info(prefix):
     """returns conda infos"""
     cmd = [join(prefix, 'bin', 'conda')]
@@ -51,9 +37,12 @@ def conda_envs(prefix):
     env_names = [a_env.split('/')[-1] for a_env in info['envs']]
     return dict(zip(env_names, info['envs']))
     
-def env_exists(prefix, env=None):
+def conda_env_exists(prefix, env=None):
     """returns True if environment exists otherwise False."""
-    return env in conda_envs(prefix)
+    if env:
+        return env in conda_envs(prefix)
+    else:
+        return False
 
 class Recipe(object):
     """This recipe is used by zc.buildout.
@@ -73,8 +62,18 @@ class Recipe(object):
         b_options['anaconda-home'] = self.anaconda_home
 
         # conda prefix
-        # either conda_env_path (set by conda env) or anaconda_home
-        self.prefix = os.environ.get('CONDA_ENV_PATH', self.anaconda_home)
+        # either prefix option or conda_env_path (set by conda env) or anaconda_home
+        self.prefix = self.options.get('prefix', os.environ.get('CONDA_ENV_PATH', self.anaconda_home))
+        self.options['prefix'] = self.prefix
+
+        # env option can be overwritten by buildout conda-env option
+        self.env = self.options.get('env', b_options.get('conda-env', ''))
+        self.options['env'] = self.env
+
+        self.options['env-path'] = self.prefix
+        if self.env:
+            self.options['env-path'] = conda_envs(self.prefix).get(self.env, self.prefix)
+        self.env_path = self.options['env-path']
         
         # offline mode
         self.offline = bool_option(b_options, 'offline', False)
@@ -88,8 +87,7 @@ class Recipe(object):
         # make channel list unique
         self.channels = list(set(self.channels))
             
-        # env option can be overwritten by buildout conda-env option
-        self.env = options.get('env', b_options.get('conda-env'))
+        # packages
         self.default_pkgs = split_args(options.get('default-pkgs', 'python=2 pip'))
         self.pkgs = split_args(options.get('pkgs'))
         self.pip_pkgs = split_args(options.get('pip'))
@@ -98,20 +96,17 @@ class Recipe(object):
         """
         install conda packages
         """
-        return self.execute(update=update)
+        offline = self.offline or update
+        self.create_env(offline)
+        self.install_pkgs(offline)
+        self.install_pip(offline)
+        return tuple()
 
     def update(self):
         return self.install(update=True)
     
-    def execute(self, update=False):
-        offline = self.offline or update
-        self._create_env(offline)
-        self._install_pkgs(offline)
-        self._install_pip(offline)
-        return tuple()
-
-    def _create_env(self, offline=False):
-        if not self.env or env_exists(self.prefix, self.env) or not self.default_pkgs:
+    def create_env(self, offline=False):
+        if not self.env or conda_env_exists(self.prefix, self.env) or not self.default_pkgs:
             return
 
         self.logger.info("Creating conda environment %s ...", self.env)
@@ -129,7 +124,7 @@ class Recipe(object):
         cmd.extend(self.default_pkgs)
         check_call(cmd)
     
-    def _install_pkgs(self, offline=False):
+    def install_pkgs(self, offline=False):
         """
         TODO: maybe use conda as python package
         """
@@ -154,14 +149,11 @@ class Recipe(object):
             check_call(cmd)
         return self.pkgs
 
-    def _install_pip(self, offline=False):
+    def install_pip(self, offline=False):
         if not offline and self.pip_pkgs:
-            envs = conda_envs(self.prefix)
-            env_path = envs.get(self.env, self.prefix)
+            self.logger.info("Installing pip packages in conda env path %s", self.env_path)
 
-            self.logger.info("Installing pip packages in conda env path %s", env_path)
-
-            cmd = [join(env_path, 'bin', 'pip')]
+            cmd = [join(self.env_path, 'bin', 'pip')]
             cmd.append('install')
             cmd.extend(self.pip_pkgs)
             check_call(cmd)
