@@ -1,0 +1,11 @@
+language: python
+python:
+  - "2.7"
+install:
+ - sudo apt-get install python-lxml
+ - python setup.py install
+ - pip install pytest-pep8 pytest-cov python-coveralls
+script:
+ - python -c "import birdhousebuilder.recipe.conda"
+after_success:
+ - coveralls
