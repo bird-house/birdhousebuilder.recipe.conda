@@ -2,7 +2,10 @@
 birdhousebuilder.recipe.conda
 *****************************
 
-.. contents::
+.. image:: https://travis-ci.org/bird-house/birdhousebuilder.recipe.conda.svg?branch=master
+   :target: https://travis-ci.org/bird-house/birdhousebuilder.recipe.conda
+   :alt: Travis Build
+
 
 Introduction
 ************
