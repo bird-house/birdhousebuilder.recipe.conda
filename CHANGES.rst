@@ -1,9 +1,10 @@
 Changes
 *******
 
-0.3.0 (2016-06-19)
+0.3.0 (2016-06-22)
 ==================
 
+* enabled travis build.
 * removed unused as_bool and makedirs functions.
 * using bool_option from zc.buildout.
 * using conda offline mode.
