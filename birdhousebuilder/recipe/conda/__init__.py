@@ -57,19 +57,23 @@ def env_exists(prefix, env=None):
 
 class Recipe(object):
     """This recipe is used by zc.buildout.
-    It install conda packages."""
+    It installs conda packages."""
 
     def __init__(self, buildout, name, options):
         self.buildout, self.name, self.options = buildout, name, options
         b_options = buildout['buildout']
 
+        self.name = options.get('name', name)
+        self.options['name'] = self.name
+        
         self.logger = logging.getLogger(self.name)
 
-        # buildout option anaconda-home overwrites default conda env path
+        # buildout option anaconda-home overwrites default anaconda path
         self.anaconda_home = b_options.get('anaconda-home', '/opt/anaconda')
         b_options['anaconda-home'] = self.anaconda_home
 
         # conda prefix
+        # either conda_env_path (set by conda env) or anaconda_home
         self.prefix = os.environ.get('CONDA_ENV_PATH', self.anaconda_home)
         
         # offline mode
