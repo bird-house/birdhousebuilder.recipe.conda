@@ -13,6 +13,5 @@ install:
  - buildout bootstrap
  - ./bin/buildout
 script:
- - python -c "import birdhousebuilder.recipe.conda"
  - ./bin/test -m birdhousebuilder.recipe.conda
 
