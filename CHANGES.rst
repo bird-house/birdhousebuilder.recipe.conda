@@ -4,6 +4,7 @@ Changes
 0.3.0 (2016-06-22)
 ==================
 
+* added option no-pin and override-channels.
 * sets conda env-path and prefix in options. 
 * enabled travis build.
 * removed unused as_bool and makedirs functions.
