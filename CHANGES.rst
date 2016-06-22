@@ -4,6 +4,7 @@ Changes
 0.3.0 (2016-06-22)
 ==================
 
+* sets conda env-path and prefix in options. 
 * enabled travis build.
 * removed unused as_bool and makedirs functions.
 * using bool_option from zc.buildout.
