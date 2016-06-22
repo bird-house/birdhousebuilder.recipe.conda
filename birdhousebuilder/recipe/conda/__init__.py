@@ -89,7 +89,7 @@ class Recipe(object):
         # Ignore pinned file.
         self.no_pin = bool_option(self.options, 'no-pin', False)
 
-        # channels option can be overwritten by buildout conda-channels option
+        # channels option or buildout conda-channels option
         self.channels = split_args( options.get('channels', b_options.get('conda-channels', 'defaults')) )
         
         # make channel list unique
