@@ -77,14 +77,20 @@ class Recipe(object):
             self.options['env-path'] = conda_envs(self.prefix).get(self.env, self.prefix)
         self.env_path = self.options['env-path']
         
-        # offline mode
+        # Offline mode, don't connect to the Internet.
         self.offline = bool_option(b_options, 'offline', False)
 
-        # newest mode
+        # Newest mode, don't update dependencies
         self.newest = bool_option(b_options, 'newest', True)
 
+        # Do not search default or .condarc channels. Requires channels.
+        self.override_channels = bool_option(self.options, 'override-channels', True)
+
+        # Ignore pinned file.
+        self.no_pin = bool_option(self.options, 'no-pin', False)
+
         # channels option can be overwritten by buildout conda-channels option
-        self.channels = split_args( options.get('channels', b_options.get('conda-channels', 'birdhouse')) )
+        self.channels = split_args( options.get('channels', b_options.get('conda-channels', 'defaults')) )
         
         # make channel list unique
         self.channels = list(set(self.channels))
@@ -120,7 +126,11 @@ class Recipe(object):
         if not self.newest:
             cmd.append('--no-update-deps')
         cmd.append('--yes')
+        if self.no_pin:
+            cmd.append('--no-pin')
         if self.channels:
+            if self.override_channels:
+                cmd.append('--override-channels')
             for channel in self.channels:
                 cmd.extend(['-c', channel])
         cmd.extend(self.default_pkgs)
@@ -142,7 +152,12 @@ class Recipe(object):
                 self.logger.info("... in conda environment %s ...", self.env)
                 cmd.extend(['-n', self.env])
             cmd.append('--yes')
+            if self.no_pin:
+                cmd.append('--no-pin')
             if self.channels:
+                if self.override_channels:
+                    self.logger.info('... override channels ...')
+                    cmd.append('--override-channels')
                 self.logger.info("... with conda channels: %s ...", ', '.join(self.channels))
                 for channel in self.channels:
                     cmd.append('-c')
