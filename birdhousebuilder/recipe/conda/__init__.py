@@ -58,6 +58,8 @@ class Recipe(object):
         self.logger = logging.getLogger(self.name)
 
         # buildout option anaconda-home overwrites default anaconda path
+        # TODO: do i realy need this?
+        # TODO: guess with "which conda"?
         self.anaconda_home = b_options.get('anaconda-home', '/opt/anaconda')
         b_options['anaconda-home'] = self.anaconda_home
 
