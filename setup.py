@@ -5,26 +5,27 @@ This module contains the tool of collective.recipe.cmd
 from setuptools import find_packages
 from setuptools import setup
 
+name = 'birdhousebuilder.recipe.conda'
+
 version = '0.3.0'
-description = 'A Buildout recipe to install anaconda packages'
+description = 'A Buildout recipe to install conda packages'
 long_description = (
     open('README.rst').read() + '\n' +
     open('AUTHORS.rst').read() + '\n' +
     open('CHANGES.rst').read()
 )
 
-entry_point = 'birdhousebuilder.recipe.conda'
-entry_points = {"zc.buildout": [
-                            "default = %s:Recipe" % entry_point,
-                          ],
-                "zc.buildout.uninstall": [
-                            "default = %s:uninstall" % entry_point,
-                          ],
-                       }
+entry_points = '''
+[zc.buildout]
+default = %(name)s:Recipe
+[zc.buildout.uninstall]
+default = %(name)s:uninstall
+''' % globals()
 
-tests_require = ['zope.testing', 'zc.buildout', 'manuel']
+reqs = ['setuptools', 'zc.buildout', 'pyyaml']
+tests_reqs = ['zc.buildout', 'zope.testing']
 
-setup(name='birdhousebuilder.recipe.conda',
+setup(name=name,
       version=version,
       description=description,
       long_description=long_description,
@@ -38,19 +39,14 @@ setup(name='birdhousebuilder.recipe.conda',
       ],
       keywords='buildout recipe conda anaconda birdhouse',
       author='Birdhouse',
+      autor_email="wps-dev at dkrz.de",
       url='https://github.com/bird-house/birdhousebuilder.recipe.conda',
-      license='BSD',
-      packages=find_packages(exclude=['ez_setup']),
-      namespace_packages=['birdhousebuilder', 'birdhousebuilder.recipe'],
-      include_package_data=True,
-      zip_safe=False,
-      install_requires=['setuptools',
-                        'zc.buildout',
-			'pyyaml',
-                        # -*- Extra requirements: -*-
-                        ],
-      tests_require=tests_require,
-      extras_require=dict(tests=tests_require),
-      test_suite='birdhousebuilder.recipe.conda.tests.test_docs.test_suite',
-      entry_points=entry_points,
+      license='Apache License 2',
+      install_requires = reqs,
+      extras_require = dict(tests=tests_reqs),
+      entry_points = entry_points,
+      packages = find_packages(exclude=['ez_setup']),
+      namespace_packages = ['birdhousebuilder', 'birdhousebuilder.recipe'],
+      include_package_data = True,
+      zip_safe = False,
       )

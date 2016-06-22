@@ -1,11 +1,18 @@
 language: python
 python:
   - "2.7"
+  - "3.5"
+matrix:
+  allow_failures:
+    - python: 3.5
 install:
- - sudo apt-get install python-lxml
- - python setup.py install
- - pip install pytest-pep8 pytest-cov python-coveralls
+ - mkdir -p buildout-cache/eggs
+ - mkdir -p buildout-cache/downloads
+ - pip install --upgrade setuptools
+ - pip install --upgrade zc.buildout
+ - buildout bootstrap
+ - ./bin/buildout
 script:
  - python -c "import birdhousebuilder.recipe.conda"
-after_success:
- - coveralls
+ - ./bin/test -m birdhousebuilder.recipe.conda
+
