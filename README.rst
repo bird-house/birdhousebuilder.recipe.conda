@@ -19,7 +19,7 @@ Introduction
 Usage
 *****
 
-The recipe requires that Anaconda is already installed. It assumes that the default Anaconda location is in your home directory ``~/anaconda``. Otherwise you need to set the ``ANACONDA_HOME`` environment variable.
+The recipe requires that Anaconda is already installed. You can use the buildout option ``anaconda-home`` to set the prefix for the anaconda installation. You can also use the recipe option ``prefix`` to set the conda prefix. Otherwise the environment variable ``CONDA_ENV_PATH`` (variable is set when activating a conda environment) is used as conda prefix. 
 
 
 Supported options
@@ -28,58 +28,59 @@ Supported options
 This recipe supports the following options:
 
 **anaconda-home**
-   Buildout option with the root folder of the Anaconda installation. Default: ``$HOME/anaconda``.
-   The default location can also be set with the environment variable ``ANACONDA_HOME``. Example:
+   Buildout option pointing to the root folder of the Anaconda installation. Default: ``$HOME/anaconda``.
 
-.. code-block:: sh
-
-     export ANACONDA_HOME=/opt/anaconda
-
-Search priority is:
-
-1. ``anaconda-home`` in ``buildout.cfg``
-2. ``$ANACONDA_HOME``
-3. ``$HOME/anaconda``
-  
 **conda-channels**
-   Buildout option (optional) with additional channels of conda packages. Default: birdhouse ioos
+   Buildout option (optional) with additional channels of conda packages. Default: defaults
+
+**prefix**
+  Path to the conda prefix (optional). If not given then ``CONDA_ENV_PATH`` or anaconda-home will be used.
   
 **pkgs**
-   A list of packages to install separated by space.
+   A list of packages to install, separated by space.
 
 **channels**
-   A list of space separated conda channels (optional). These channels are merged with conda-channels option.
+   A list of space separated conda channels (optional). These channels are merged with conda-channels option. Default: defaults.
+
+**override-channels**
+   If True then default channels from ``~/.condarc`` are ignored (optional). Default. true.
+
+**no-pin**
+   If True then conda pinned file is ignored (optional). Default: false.
 
 **env**
-   Name of conda environment used for installation (optional). If environment is missing then all packages are installed in the birdhouse environment (``birdhouse``).
+   Name of conda environment used for installation (optional). If environment is missing then packages are installed in the active environment.
 
 **default-pkgs**
-   A list of packages to install when creating environment separated by space (optional). Default: ``python``
+   A list of packages to install when creating a conda environment separated by space (optional). Default: ``python``
 
-**on-update**
-   If set to false conda will not check for updates when running buildout update. Default: ``false``.
+**pip-pkgs**
+   A list of packages which are installed by pip into the conda enviroment (optional).
 
 .. note::
 
    If buildout is run in offline mode no network connection will be establish and conda packages will not be installed.
 
+.. note::
+
+   If buildout is run in ``newest=false`` mode then conda dependencies are not updated.
+
+
 Example usage
 =============
 
-The following example ``buildout.cfg`` installs the conda packages lxml, nose and matplotlib:
+The following example ``buildout.cfg`` installs the packages in the active conda environment.
 
 .. code-block:: sh
 
   [buildout]
-  parts = conda_pkgs
+  parts = conda
 
   conda-channels = birdhouse
 
-  [conda_pkgs]
+  [conda]
   recipe = birdhousebuilder.recipe.conda
-  pkgs = lxml nose matplotlib owslib
-  channels = birdhouse asmeurer
-  env = mytest
-  default-pkgs = python
-  on-update = false
+  pkgs = lxml owslib
+  channels = defaults birdhouse
+
 
