@@ -60,12 +60,11 @@ class Recipe(object):
         # buildout option anaconda-home overwrites default anaconda path
         # TODO: do i realy need this?
         # TODO: guess with "which conda"?
-        self.anaconda_home = b_options.get('anaconda-home', '/opt/anaconda')
-        b_options['anaconda-home'] = self.anaconda_home
+        b_options['anaconda-home'] = b_options.get('anaconda-home', '/opt/anaconda')
 
         # conda prefix
         # either prefix option or conda_env_path (set by conda env) or anaconda_home
-        self.prefix = self.options.get('prefix', os.environ.get('CONDA_ENV_PATH', self.anaconda_home))
+        self.prefix = self.options.get('prefix', os.environ.get('CONDA_ENV_PATH', b_options['anaconda-home']))
         self.options['prefix'] = self.prefix
 
         # env option can be overwritten by buildout conda-env option
@@ -125,6 +124,7 @@ class Recipe(object):
             cmd.append('--offline')
         if not self.newest:
             cmd.append('--no-update-deps')
+            #cmd.append('--no-deps')
         cmd.append('--yes')
         if self.no_pin:
             cmd.append('--no-pin')
@@ -148,6 +148,7 @@ class Recipe(object):
                 cmd.append('--offline')
             if not self.newest:
                 cmd.append('--no-update-deps')
+                #cmd.append('--no-deps')
             if self.env:
                 self.logger.info("... in conda environment %s ...", self.env)
                 cmd.extend(['-n', self.env])
