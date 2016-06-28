@@ -9,9 +9,7 @@ matrix:
 install:
  - mkdir -p buildout-cache/eggs
  - mkdir -p buildout-cache/downloads
- - pip install --upgrade setuptools
- - pip install --upgrade zc.buildout
- - buildout bootstrap
+ - python bootstrap.py
  - ./bin/buildout
 script:
  - ./bin/test -m birdhousebuilder.recipe.conda
