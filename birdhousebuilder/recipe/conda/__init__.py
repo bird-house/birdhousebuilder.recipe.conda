@@ -60,7 +60,7 @@ class Recipe(object):
         # buildout option anaconda-home overwrites default anaconda path
         # TODO: do i realy need this?
         # TODO: guess with "which conda"?
-        b_options['anaconda-home'] = b_options.get('anaconda-home', '/opt/anaconda')
+        b_options['anaconda-home'] = b_options.get('anaconda-home', join(os.environ('HOME'), 'anaconda'))
 
         # conda prefix
         # either prefix option or conda_env_path (set by conda env) or anaconda_home
