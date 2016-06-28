@@ -1,7 +1,7 @@
 Changes
 *******
 
-0.3.0 (2016-06-22)
+0.3.0 (2016-06-28)
 ==================
 
 * added option no-pin and override-channels.
@@ -11,6 +11,8 @@ Changes
 * using bool_option from zc.buildout.
 * using conda offline mode.
 * install pip packages.
+* added prefix option.
+* using ``CONDA_ENV_PATH``.
 
 0.2.7 (2016-04-15)
 ==================
