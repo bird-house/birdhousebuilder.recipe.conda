@@ -76,8 +76,6 @@ The following example ``buildout.cfg`` installs the packages in the active conda
   [buildout]
   parts = conda
 
-  conda-channels = birdhouse
-
   [conda]
   recipe = birdhousebuilder.recipe.conda
   pkgs = lxml owslib
