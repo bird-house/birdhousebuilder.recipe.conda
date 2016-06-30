@@ -7,7 +7,7 @@ from setuptools import setup
 
 name = 'birdhousebuilder.recipe.conda'
 
-version = '0.3.0'
+version = '0.3.1'
 description = 'A Buildout recipe to install conda packages'
 long_description = (
     open('README.rst').read() + '\n' +
