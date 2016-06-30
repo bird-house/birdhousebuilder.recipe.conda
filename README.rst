@@ -19,7 +19,7 @@ Introduction
 Usage
 *****
 
-The recipe requires that Anaconda is already installed. You can use the buildout option ``anaconda-home`` to set the prefix for the anaconda installation. You can also use the recipe option ``prefix`` to set the conda prefix. Otherwise the environment variable ``CONDA_ENV_PATH`` (variable is set when activating a conda environment) is used as conda prefix. 
+The recipe requires that Anaconda is already installed. You can use the buildout option ``anaconda-home`` to set the prefix for the anaconda installation. You can also use the recipe option ``prefix`` to set the conda prefix. Otherwise the environment variable ``CONDA_PREFIX`` (variable is set when activating a conda environment) is used as conda prefix. 
 
 
 Supported options
@@ -34,7 +34,7 @@ This recipe supports the following options:
    Buildout option (optional) with additional channels of conda packages. Default: defaults
 
 **prefix**
-  Path to the conda prefix (optional). If not given then ``CONDA_ENV_PATH`` or anaconda-home will be used.
+  Path to the conda prefix (optional). If not given then ``CONDA_PREFIX`` or anaconda-home will be used.
   
 **pkgs**
    A list of packages to install, separated by space.
