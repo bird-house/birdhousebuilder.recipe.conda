@@ -63,18 +63,19 @@ class Recipe(object):
         b_options['anaconda-home'] = b_options.get('anaconda-home', join(os.environ.get('HOME', '/opt'), 'anaconda'))
 
         # conda prefix
-        # either prefix option or conda_env_path (set by conda env) or anaconda_home
-        self.prefix = self.options.get('prefix', os.environ.get('CONDA_ENV_PATH', b_options['anaconda-home']))
-        self.options['prefix'] = self.prefix
-
+        # either prefix option or CONDA_PREFIX (set by conda env) or anaconda_home
+        self.prefix = self.options.get('prefix',
+                                       os.environ.get('CONDA_PREFIX',
+                                                      os.environ.get('CONDA_ENV_PATH',
+                                                                     b_options['anaconda-home'])))
+        
         # env option can be overwritten by buildout conda-env option
         self.env = self.options.get('env', b_options.get('conda-env', ''))
         self.options['env'] = self.env
 
-        self.options['env-path'] = self.prefix
         if self.env:
-            self.options['env-path'] = conda_envs(self.prefix).get(self.env, self.prefix)
-        self.env_path = self.options['env-path']
+            self.prefix = conda_envs(self.prefix).get(self.env, self.prefix)
+        self.options['prefix'] = self.prefix
         
         # Offline mode, don't connect to the Internet.
         self.offline = bool_option(b_options, 'offline', False)
@@ -169,9 +170,9 @@ class Recipe(object):
 
     def install_pip(self, offline=False):
         if not offline and self.pip_pkgs:
-            self.logger.info("Installing pip packages in conda env path %s", self.env_path)
+            self.logger.info("Installing pip packages in conda env path %s", self.prefix)
 
-            cmd = [join(self.env_path, 'bin', 'pip')]
+            cmd = [join(self.prefix, 'bin', 'pip')]
             cmd.append('install')
             cmd.extend(self.pip_pkgs)
             check_call(cmd)
