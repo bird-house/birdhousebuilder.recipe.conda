@@ -64,6 +64,7 @@ class Recipe(object):
 
         # conda prefix
         # either prefix option or CONDA_PREFIX (set by conda env) or anaconda_home
+        # TODO: check if prefix is a valid argument (not '' or None)
         self.prefix = self.options.get('prefix',
                                        os.environ.get('CONDA_PREFIX',
                                                       os.environ.get('CONDA_ENV_PATH',
