@@ -166,7 +166,10 @@ class Recipe(object):
                     cmd.append('-c')
                     cmd.append(channel)
             cmd.extend(self.pkgs)
-            check_call(cmd)
+            try: 
+                check_call(cmd)
+            except CalledProcessError as err:
+                self.logger.error("Conda exited with errors: %s", err.output)
         return self.pkgs
 
     def install_pip(self, offline=False):
