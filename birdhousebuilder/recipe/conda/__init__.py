@@ -4,7 +4,7 @@
 import os
 from os.path import join
 import yaml
-from subprocess import check_output, check_call
+from subprocess import check_output, check_call, CalledProcessError
 
 from zc.buildout.buildout import bool_option
 
