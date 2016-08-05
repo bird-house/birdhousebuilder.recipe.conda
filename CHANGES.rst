@@ -1,6 +1,11 @@
 Changes
 *******
 
+0.3.3 (2016-08-05)
+==================
+
+fixed: added missing CalledProcessError import
+
 0.3.2 (2016-07-11)
 ==================
 
