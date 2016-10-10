@@ -33,6 +33,9 @@ This recipe supports the following options:
 **conda-channels**
    Buildout option (optional) with additional channels of conda packages. Default: defaults
 
+**conda-offline**
+   Buildout option (optional) to set conda offline mode. It has no effect when buildout is already in offline mode. Default: false
+
 **prefix**
   Path to the conda prefix (optional). If not given then ``CONDA_PREFIX`` or anaconda-home will be used.
   

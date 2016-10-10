@@ -1,10 +1,15 @@
 Changes
 *******
 
+0.3.4 (2016-10-10)
+==================
+
+* added buildout option conda-offline (#8).
+
 0.3.3 (2016-08-05)
 ==================
 
-fixed: added missing CalledProcessError import
+* fixed: added missing CalledProcessError import
 
 0.3.2 (2016-07-11)
 ==================
