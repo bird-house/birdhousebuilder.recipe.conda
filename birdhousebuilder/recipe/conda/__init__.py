@@ -88,6 +88,8 @@ class Recipe(object):
 
         # Offline mode, don't connect to the Internet.
         self.offline = bool_option(b_options, 'offline', False)
+        if not self.offline:
+            self.offline = bool_option(b_options, 'conda-offline', False)
 
         # Newest mode, don't update dependencies
         self.newest = bool_option(b_options, 'newest', True)
@@ -137,12 +139,14 @@ class Recipe(object):
         cmd.extend(['create', '-n', self.env])
         if offline:
             cmd.append('--offline')
+            self.logger.info("... offline mode ...")
         if not self.newest:
             cmd.append('--no-update-deps')
-            #cmd.append('--no-deps')
+            self.logger.info("... no update dependencies ...")
         cmd.append('--yes')
         if self.no_pin:
             cmd.append('--no-pin')
+            self.logger.info("... no pin ...")
         if self.channels:
             if self.override_channels:
                 cmd.append('--override-channels')
@@ -161,15 +165,17 @@ class Recipe(object):
             cmd.append('install')
             if offline:
                 cmd.append('--offline')
+                self.logger.info("... offline mode ...")
             if not self.newest:
                 cmd.append('--no-update-deps')
-                #cmd.append('--no-deps')
+                self.logger.info("... no update dependencies ...")
             if self.env:
                 self.logger.info("... in conda environment %s ...", self.env)
                 cmd.extend(['-n', self.env])
             cmd.append('--yes')
             if self.no_pin:
                 cmd.append('--no-pin')
+                self.logger.info("... no pin ...")
             if self.channels:
                 if self.override_channels:
                     self.logger.info('... override channels ...')
