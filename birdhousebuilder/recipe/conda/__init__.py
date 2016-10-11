@@ -96,19 +96,29 @@ class Recipe(object):
 
         # Do not search default or .condarc channels. Requires channels.
         self.override_channels = bool_option(
-            self.options, 'override-channels', True)
+            b_options, 'override-channels', True)
 
         # Ignore pinned file.
-        self.no_pin = bool_option(self.options, 'no-pin', False)
+        self.no_pin = bool_option(b_options, 'no-pin', False)
 
         # channels option or buildout conda-channels option
-        self.channels = split_args(
-            options.get(
-                'channels',
-                b_options.get('conda-channels', 'defaults')))
+        self.channels = split_args(b_options.get('conda-channels', 'defaults'))
+        self.logger.debug('buildout conda channels %s', self.channels)
+
+        # buildout channels are overwritten by recipe channels
+        recipe_channels = split_args(self.options.get('channels', ''))
+        if recipe_channels:
+            self.channels = recipe_channels
 
         # make channel list unique
-        self.channels = list(set(self.channels))
+        self.channels = [channel for n, channel in enumerate(self.channels)
+                         if channel not in self.channels[:n]]
+        self.logger.debug('unique conda channels %s', self.channels)
+
+        # channel priority
+        self.channel_priority = bool_option(
+            b_options,
+            'channel-priority', True)
 
         # packages
         self.default_pkgs = split_args(
@@ -147,6 +157,9 @@ class Recipe(object):
         if self.no_pin:
             cmd.append('--no-pin')
             self.logger.info("... no pin ...")
+        if self.channel_priority:
+            self.logger.info("... channel priority ...")
+            cmd.append('--channel-priority')
         if self.channels:
             if self.override_channels:
                 cmd.append('--override-channels')
@@ -176,6 +189,9 @@ class Recipe(object):
             if self.no_pin:
                 cmd.append('--no-pin')
                 self.logger.info("... no pin ...")
+            if self.channel_priority:
+                self.logger.info("... channel priority ...")
+                cmd.append('--channel-priority')
             if self.channels:
                 if self.override_channels:
                     self.logger.info('... override channels ...')
