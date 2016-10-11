@@ -1,6 +1,12 @@
 Changes
 *******
 
+0.3.5 (2016-10-12)
+==================
+
+* added buildout option channel-priority.
+* fixed order of channels.
+
 0.3.4 (2016-10-10)
 ==================
 
