@@ -31,10 +31,13 @@ This recipe supports the following options:
    Buildout option pointing to the root folder of the Anaconda installation. Default: ``$HOME/anaconda``.
 
 **conda-channels**
-   Buildout option (optional) with additional channels of conda packages. Default: defaults
+   Buildout option (optional) with channels of conda packages. Default: defaults
 
 **conda-offline**
    Buildout option (optional) to set conda offline mode. It has no effect when buildout is already in offline mode. Default: false
+
+**channel-priority**
+   Buildout option (optional) to set channel priority in conda install. Default: true
 
 **prefix**
   Path to the conda prefix (optional). If not given then ``CONDA_PREFIX`` or anaconda-home will be used.
