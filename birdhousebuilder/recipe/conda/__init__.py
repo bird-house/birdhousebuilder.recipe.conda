@@ -122,7 +122,7 @@ class Recipe(object):
 
         # packages
         self.default_pkgs = split_args(
-            options.get('default-pkgs', 'python=2 pip'))
+            self.options.get('default-pkgs', 'python=2 pip'))
         self.pkgs = split_args(options.get('pkgs'))
         self.pip_pkgs = split_args(options.get('pip'))
 
