@@ -140,16 +140,16 @@ class Recipe(object):
         return self.install(update=True)
 
     def create_env(self, offline=False):
-        if not self.env or conda_env_exists(self.prefix, self.env) or not self.default_pkgs:
+        if offline or not self.env or conda_env_exists(self.prefix, self.env) or not self.default_pkgs:
             return
 
         self.logger.info("Creating conda environment %s ...", self.env)
 
         cmd = [join(self.prefix, 'bin', 'conda')]
         cmd.extend(['create', '-n', self.env])
-        if offline:
-            cmd.append('--offline')
-            self.logger.info("... offline mode ...")
+        # if offline:
+        #     cmd.append('--offline')
+        #     self.logger.info("... offline mode ...")
         if not self.newest:
             cmd.append('--no-update-deps')
             self.logger.info("... no update dependencies ...")
@@ -172,13 +172,13 @@ class Recipe(object):
         """
         TODO: maybe use conda as python package
         """
-        if self.pkgs:
+        if not offline and self.pkgs:
             self.logger.info("Installing conda packages ...")
             cmd = [join(self.prefix, 'bin', 'conda')]
             cmd.append('install')
-            if offline:
-                cmd.append('--offline')
-                self.logger.info("... offline mode ...")
+            # if offline:
+            #     cmd.append('--offline')
+            #     self.logger.info("... offline mode ...")
             if not self.newest:
                 cmd.append('--no-update-deps')
                 self.logger.info("... no update dependencies ...")
