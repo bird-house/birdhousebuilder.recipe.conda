@@ -4,20 +4,8 @@ Doctest runner for 'birdhousebuilder.recipe.conda'.
 """
 
 import os
-import doctest
 import unittest
 import zc.buildout.testing
-
-from zope.testing import renormalizing
-
-optionflags = (doctest.ELLIPSIS |
-               doctest.NORMALIZE_WHITESPACE |
-               doctest.REPORT_UDIFF |
-               doctest.REPORT_ONLY_FIRST_FAILURE)
-
-checker = renormalizing.RENormalizing([
-        zc.buildout.testing.normalize_path,
-        ])
 
 
 class RecipeTests(unittest.TestCase):
@@ -37,23 +25,9 @@ class RecipeTests(unittest.TestCase):
         self.assertEqual(self.recipe.install(), ())
 
 
-def setUp(test):
-    zc.buildout.testing.buildoutSetUp(test)
-    # Install the recipe in develop mode
-    zc.buildout.testing.install_develop('birdhousebuilder.recipe.conda', test)
-    # Install any other recipes that should be available in the tests
-    zc.buildout.testing.install('zope.testing', test)
-
-
 def test_suite():
     return unittest.TestSuite([
         unittest.makeSuite(RecipeTests),
-        # doctest.DocFileSuite(
-        #     'README.rst',
-        #     setUp=setUp,
-        #     tearDown=zc.buildout.testing.buildoutTearDown,
-        #     optionflags=optionflags,
-        #     checker=checker),
         ])
 
 
