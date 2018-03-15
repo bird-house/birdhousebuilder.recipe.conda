@@ -1,3 +1,6 @@
 include *.rst
+include *.txt
 graft birdhousebuilder
-global-exclude *.pyc
+global-exclude *.*~
+global-exclude __pycache__
+global-exclude *.py[co]
