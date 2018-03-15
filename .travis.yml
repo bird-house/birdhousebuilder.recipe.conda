@@ -10,3 +10,4 @@ install:
  - ./bin/buildout
 script:
  - ./bin/test -m birdhousebuilder.recipe.conda
+ - flake8

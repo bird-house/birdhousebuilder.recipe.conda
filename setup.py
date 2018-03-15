@@ -23,7 +23,7 @@ default = %(name)s:uninstall
 ''' % globals()
 
 reqs = ['setuptools', 'zc.buildout', 'pyyaml']
-tests_reqs = ['zc.buildout >=2.9', 'zope.testing']
+tests_reqs = ['zc.buildout >=2.9', 'zope.testing', 'flake8']
 
 setup(name=name,
       version=version,
