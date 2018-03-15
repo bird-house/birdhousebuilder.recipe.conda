@@ -1,4 +1,0 @@
-Simple example
---------------
-
-    >>> import os
