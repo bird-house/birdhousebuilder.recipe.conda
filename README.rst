@@ -6,11 +6,18 @@ birdhousebuilder.recipe.conda
    :target: https://travis-ci.org/bird-house/birdhousebuilder.recipe.conda
    :alt: Travis Build
 
+.. image:: https://img.shields.io/github/license/bird-house/birdhousebuilder.recipe.conda.svg
+  :target: https://github.com/bird-house/birdhousebuilder.recipe.conda/blob/master/LICENSE.txt
+  :alt: GitHub license
+
+.. image:: https://badges.gitter.im/bird-house/birdhouse.svg
+  :target: https://gitter.im/bird-house/birdhouse?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
+  :alt: Join the chat at https://gitter.im/bird-house/birdhouse
 
 Introduction
 ************
 
-``birdhousebuilder.recipe.conda`` is a `Buildout`_ recipe to install `Anaconda`_ packages. This recipe is used by the `Birdhouse`_ project. 
+``birdhousebuilder.recipe.conda`` is a `Buildout`_ recipe to install `Anaconda`_ packages. This recipe is used by the `Birdhouse`_ project.
 
 .. _`Buildout`: http://buildout.org/
 .. _`Anaconda`: http://www.continuum.io/
@@ -19,7 +26,7 @@ Introduction
 Usage
 *****
 
-The recipe requires that Anaconda is already installed. You can use the buildout option ``anaconda-home`` to set the prefix for the anaconda installation. You can also use the recipe option ``prefix`` to set the conda prefix. Otherwise the environment variable ``CONDA_PREFIX`` (variable is set when activating a conda environment) is used as conda prefix. 
+The recipe requires that Anaconda is already installed. You can use the buildout option ``anaconda-home`` to set the prefix for the anaconda installation. You can also use the recipe option ``prefix`` to set the conda prefix. Otherwise the environment variable ``CONDA_PREFIX`` (variable is set when activating a conda environment) is used as conda prefix.
 
 
 Supported options
@@ -41,7 +48,7 @@ This recipe supports the following options:
 
 **prefix**
   Path to the conda prefix (optional). If not given then ``CONDA_PREFIX`` or anaconda-home will be used.
-  
+
 **pkgs**
    A list of packages to install, separated by space.
 
@@ -86,5 +93,3 @@ The following example ``buildout.cfg`` installs the packages in the active conda
   recipe = birdhousebuilder.recipe.conda
   pkgs = lxml owslib
   channels = defaults birdhouse
-
-
