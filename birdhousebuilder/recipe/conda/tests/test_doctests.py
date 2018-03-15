@@ -12,6 +12,7 @@ from zc.buildout.testing import buildoutSetUp
 from zc.buildout.testing import buildoutTearDown
 from zc.buildout.testing import install_develop
 
+
 def setUp(test):
     buildoutSetUp(test)
     # Work around "Not Found" messages on Buildout 2
@@ -20,9 +21,9 @@ def setUp(test):
 
     install_develop('birdhousebuilder.recipe.conda', test)
 
+
 def test_suite():
     return DocFileSuite(
         '../README.txt',
         setUp=setUp, tearDown=buildoutTearDown,
         optionflags=ELLIPSIS | NORMALIZE_WHITESPACE | REPORT_UDIFF)
-
