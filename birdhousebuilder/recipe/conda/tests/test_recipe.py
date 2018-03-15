@@ -48,12 +48,12 @@ def setUp(test):
 def test_suite():
     return unittest.TestSuite([
         unittest.makeSuite(RecipeTests),
-        doctest.DocFileSuite(
-            'README.rst',
-            setUp=setUp,
-            tearDown=zc.buildout.testing.buildoutTearDown,
-            optionflags=optionflags,
-            checker=checker),
+        # doctest.DocFileSuite(
+        #     'README.rst',
+        #     setUp=setUp,
+        #     tearDown=zc.buildout.testing.buildoutTearDown,
+        #     optionflags=optionflags,
+        #     checker=checker),
         ])
 
 
