@@ -4,26 +4,40 @@ Doctest runner for 'birdhousebuilder.recipe.conda'.
 """
 
 import os
-from doctest import DocFileSuite
-from doctest import ELLIPSIS
-from doctest import NORMALIZE_WHITESPACE
-from doctest import REPORT_UDIFF
-from zc.buildout.testing import buildoutSetUp
-from zc.buildout.testing import buildoutTearDown
-from zc.buildout.testing import install_develop
+import doctest
+import unittest
+import zc.buildout.testing
+
+from zope.testing import renormalizing
+
+optionflags = (doctest.ELLIPSIS |
+               doctest.NORMALIZE_WHITESPACE |
+               doctest.REPORT_UDIFF |
+               doctest.REPORT_ONLY_FIRST_FAILURE)
+
+checker = renormalizing.RENormalizing([
+        zc.buildout.testing.normalize_path,
+        ])
 
 
 def setUp(test):
-    buildoutSetUp(test)
-    # Work around "Not Found" messages on Buildout 2
-    del os.environ['buildout-testing-index-url']
-    test.globs['buildout'] += ' -No'
-
-    install_develop('birdhousebuilder.recipe.conda', test)
+    zc.buildout.testing.buildoutSetUp(test)
+    # Install the recipe in develop mode
+    zc.buildout.testing.install_develop('birdhousebuilder.recipe.conda', test)
+    # Install any other recipes that should be available in the tests
+    zc.buildout.testing.install('zope.testing', test)
 
 
 def test_suite():
-    return DocFileSuite(
-        '../README.txt',
-        setUp=setUp, tearDown=buildoutTearDown,
-        optionflags=ELLIPSIS | NORMALIZE_WHITESPACE | REPORT_UDIFF)
+    return unittest.TestSuite([
+        doctest.DocFileSuite(
+            '../README.txt',
+            setUp=setUp,
+            tearDown=zc.buildout.testing.buildoutTearDown,
+            optionflags=optionflags,
+            checker=checker),
+        ])
+
+
+if __name__ == '__main__':
+    unittest.main(defaultTest='test_suite')
