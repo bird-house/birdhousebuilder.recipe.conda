@@ -20,6 +20,22 @@ checker = renormalizing.RENormalizing([
         ])
 
 
+class RecipeTests(unittest.TestCase):
+
+    def setUp(self):
+        self.buildout = buildout = zc.buildout.testing.Buildout()
+        self.options = dict(pkgs='yaml')
+        import birdhousebuilder.recipe.conda
+        self.recipe = birdhousebuilder.recipe.conda.Recipe(
+            buildout, name='conda', options=self.options)
+
+    def tearDown(self):
+        pass
+
+    def test_install(self):
+        self.assertEqual(self.recipe.install(), ())
+
+
 def setUp(test):
     zc.buildout.testing.buildoutSetUp(test)
     # Install the recipe in develop mode
@@ -30,6 +46,7 @@ def setUp(test):
 
 def test_suite():
     return unittest.TestSuite([
+        unittest.makeSuite(RecipeTests),
         doctest.DocFileSuite(
             'README.rst',
             setUp=setUp,
