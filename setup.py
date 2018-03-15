@@ -23,7 +23,7 @@ default = %(name)s:uninstall
 ''' % globals()
 
 reqs = ['setuptools', 'zc.buildout', 'pyyaml']
-tests_reqs = ['zc.buildout', 'zope.testing']
+tests_reqs = ['zc.buildout >=2.9', 'zope.testing']
 
 setup(name=name,
       version=version,
@@ -42,11 +42,11 @@ setup(name=name,
       author_email="wps-dev at dkrz.de",
       url='https://github.com/bird-house/birdhousebuilder.recipe.conda',
       license='Apache License 2',
-      install_requires = reqs,
-      extras_require = dict(tests=tests_reqs),
-      entry_points = entry_points,
-      packages = find_packages(exclude=['ez_setup']),
-      namespace_packages = ['birdhousebuilder', 'birdhousebuilder.recipe'],
-      include_package_data = True,
-      zip_safe = False,
+      install_requires=reqs,
+      extras_require=dict(tests=tests_reqs),
+      entry_points=entry_points,
+      packages=find_packages(exclude=['ez_setup']),
+      namespace_packages=['birdhousebuilder', 'birdhousebuilder.recipe'],
+      include_package_data=True,
+      zip_safe=False,
       )
