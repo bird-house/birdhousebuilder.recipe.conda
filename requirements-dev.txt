@@ -1,0 +1,6 @@
+-r requirements.txt
+# tests
+zc.buildout>=2.9
+zope.testing
+# pep8
+flake8

@@ -22,8 +22,8 @@ default = %(name)s:Recipe
 default = %(name)s:uninstall
 ''' % globals()
 
-reqs = ['setuptools', 'zc.buildout', 'pyyaml']
-tests_reqs = ['zc.buildout >=2.9', 'zope.testing', 'flake8']
+reqs = [line.strip() for line in open('requirements.txt')]
+tests_reqs = [line.strip() for line in open('requirements-dev.txt')]
 
 setup(name=name,
       version=version,
