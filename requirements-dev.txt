@@ -1,5 +1,6 @@
+-r requirements.txt
 # tests
-zc.buildout>=2.9
 zope.testing
+zope.testrunner
 # pep8
 flake8
