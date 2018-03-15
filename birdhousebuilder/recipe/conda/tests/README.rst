@@ -20,6 +20,6 @@ Lets create a minimal `buildout.cfg` file::
   ...
   ... [conda]
   ... recipe = birdhousebuilder.recipe.conda
-  ... pks = yaml
+  ... pkgs = yaml
   ... channels = defaults
   ... ''')
