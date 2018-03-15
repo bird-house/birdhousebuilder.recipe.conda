@@ -23,11 +23,12 @@ checker = renormalizing.RENormalizing([
 class RecipeTests(unittest.TestCase):
 
     def setUp(self):
-        self.buildout = buildout = zc.buildout.testing.Buildout()
-        self.options = dict(pkgs='yaml')
+        buildout = zc.buildout.testing.Buildout()
+        buildout['buildout']['offline'] = 'true'
+        options = dict(pkgs='yaml')
         import birdhousebuilder.recipe.conda
         self.recipe = birdhousebuilder.recipe.conda.Recipe(
-            buildout, name='conda', options=self.options)
+            buildout, name='conda', options=options)
 
     def tearDown(self):
         pass
