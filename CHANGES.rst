@@ -1,6 +1,13 @@
 Changes
 *******
 
+0.4.0 (2018-03-15)
+==================
+
+* pep8 testing in travis (#13).
+* skipped doctests and using buildout.testing (#5).
+* fix conda-prefix in conda version >= 4.4 (#10).
+
 0.3.6 (2017-05-08)
 ==================
 
@@ -36,7 +43,7 @@ Changes
 ==================
 
 * added option no-pin and override-channels.
-* sets conda env-path and prefix in options. 
+* sets conda env-path and prefix in options.
 * enabled travis build.
 * removed unused as_bool and makedirs functions.
 * using bool_option from zc.buildout.
@@ -63,7 +70,7 @@ Changes
 0.2.4 (2015-08-05)
 ==================
 
-* use CONDA_ENVS_DIR to overwrite base dir of conda environments. 
+* use CONDA_ENVS_DIR to overwrite base dir of conda environments.
 
 0.2.2 (2015-02-25)
 ==================
@@ -95,7 +102,7 @@ Changes
 0.1.2 (2014-12-02)
 ==================
 
-* added on on-update buildout option. 
+* added on on-update buildout option.
 
 0.1.1 (2014-07-31)
 ==================
