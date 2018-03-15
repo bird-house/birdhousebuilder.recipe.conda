@@ -67,6 +67,7 @@ class Recipe(object):
         # TODO: guess with "which conda"?
         b_options['anaconda-home'] = b_options.get(
             'anaconda-home', join(os.environ.get('HOME', '/opt'), 'anaconda'))
+        self.anaconda_home = b_options['anaconda-home']
 
         # conda prefix
         # either prefix option or CONDA_PREFIX (set by conda env) or
@@ -83,7 +84,7 @@ class Recipe(object):
         self.options['env'] = self.env
 
         if self.env:
-            self.prefix = conda_envs(self.prefix).get(self.env, self.prefix)
+            self.prefix = conda_envs(self.anaconda_home).get(self.env, self.prefix)
         self.options['prefix'] = self.prefix
 
         # Offline mode, don't connect to the Internet.
@@ -140,12 +141,12 @@ class Recipe(object):
         return self.install(update=True)
 
     def create_env(self, offline=False):
-        if offline or not self.env or conda_env_exists(self.prefix, self.env) or not self.default_pkgs:
+        if offline or not self.env or conda_env_exists(self.anaconda_home, self.env) or not self.default_pkgs:
             return
 
         self.logger.info("Creating conda environment %s ...", self.env)
 
-        cmd = [join(self.prefix, 'bin', 'conda')]
+        cmd = [join(self.anaconda_home, 'bin', 'conda')]
         cmd.extend(['create', '-n', self.env])
         # if offline:
         #     cmd.append('--offline')
@@ -174,7 +175,7 @@ class Recipe(object):
         """
         if not offline and self.pkgs:
             self.logger.info("Installing conda packages ...")
-            cmd = [join(self.prefix, 'bin', 'conda')]
+            cmd = [join(self.anaconda_home, 'bin', 'conda')]
             cmd.append('install')
             # if offline:
             #     cmd.append('--offline')
@@ -203,6 +204,7 @@ class Recipe(object):
                     cmd.append(channel)
             cmd.extend(self.pkgs)
             try:
+                self.logger.debug("install_pkgs cmd: %s", cmd)
                 check_call(cmd)
             except CalledProcessError as err:
                 self.logger.error("Conda exited with errors: %s", err.output)

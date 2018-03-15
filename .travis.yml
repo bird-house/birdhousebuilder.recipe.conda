@@ -1,11 +1,8 @@
 language: python
 python:
   - "2.7"
-  - "3.5"
+  - "3.6"
 sudo: false
-matrix:
-  allow_failures:
-    - python: 3.5
 install:
  - mkdir -p buildout-cache/eggs
  - mkdir -p buildout-cache/downloads
@@ -13,4 +10,3 @@ install:
  - ./bin/buildout
 script:
  - ./bin/test -m birdhousebuilder.recipe.conda
-
